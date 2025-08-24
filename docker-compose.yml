@@ -1,0 +1,73 @@
+services:
+  user-db:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: user-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD:-Str0ng!Passw0rd}
+    # ports: ["6001:1433"] # debug
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$SA_PASSWORD -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 25
+      # I have adjusted this value, considering some old machine would take a lot of time for a db container 
+       # to start up. if 25 * 10 = 250s is not enough, consider buying new computer.
+    networks: [user-network]
+    # Nếu máy Mac Apple Silicon bị lỗi, bỏ comment 2 dòng dưới:
+    # platform: linux/amd64
+    # deploy: { }
+
+  user-service:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile # redundant, only for explicitness.
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    container_name: user-service
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      
+      - ServiceUrls__Users=http://user-service:8080
+
+      - ConnectionStrings__DefaultConnection=Server=user-db,1433;Database=UserDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
+      
+      - Email__Username=${EMAIL__USERNAME}
+      - Email__Password=${EMAIL__PASSWORD}
+
+      - JwtSettings__Key=${JWTSETTINGS__KEY} 
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
+      
+    depends_on:
+      user-db:
+        condition: service_healthy
+    ports: ["5001:8080"] # debug
+    networks: [user-network, main-network]
+
+
+
+  # apigateway:
+  #   build:
+  #     context: ./ApiGateway 
+  #     dockerfile: Dockerfile # redundant, only for explicitness.
+  #   container_name: apigateway
+  #   environment:
+  #     - ASPNETCORE_URLS=http://+:8080
+  #     - JwtSettings__Key=${JWTSETTINGS_KEY} 
+  #     - JwtSettings__Issuer=${JWTSETTINGS_ISSUER} 
+  #     - JwtSettings__Audience=${JWTSETTINGS_AUDIENCE} 
+  #   depends_on:
+  #     user-service:
+  #       condition: service_started
+  #     product-service:
+  #       condition: service_started
+  #   ports: ["${GATEWAY_PORT}:8080"]
+  #   networks: [main-network]
+
+networks:
+  main-network:
+    driver: bridge # liên kết các service với nhau và với apigateway
+  user-network:
+    driver: bridge # liên kết riêng user-db với user-service
+  
