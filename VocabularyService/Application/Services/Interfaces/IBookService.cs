@@ -1,4 +1,6 @@
-﻿using Application.Dtos.BookDto;
+﻿using Application.Dtos.BaseDto;
+using Application.Dtos.BookDto;
+using Azure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,12 @@ namespace Application.Services.Interfaces
 {
     public interface IBookService
     {
-        Task<IEnumerable<BookDto>> GetAllBooksAsync();
-        Task<IEnumerable<BookOfUserDto>> GetAllBooksByUserIdAsync(Guid userId);
+        Task<PageResultDto<BookDto>> GetAllBooksAsync(int page,int  pageSize);
+        Task<PageResultDto<BookOfUserDto>> GetAllBooksByUserIdAsync(Guid userId, int page, int pageSize);
+        Task<PageResultDto<BookOfUserDto>> GetMyBook(int page, int pageSize);
         Task<BookDto> GetBookByIdAsync(Guid id);
         Task AddBookAsync(BookCreateDto bookCreateDto);
-        Task UpdateBookAsync(BookUpdateDto bookUpdateDto);
+        Task UpdateBookAsync(BookUpdateDto bookUpdateDto, Guid id);
         Task DeleteBookAsync(Guid id);
     }
 }

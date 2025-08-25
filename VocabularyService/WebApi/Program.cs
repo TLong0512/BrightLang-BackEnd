@@ -12,6 +12,10 @@ using WebApi.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 // Add services to the container.
 builder.Services.AddDbContext<VocabularyContext>(ops => ops.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

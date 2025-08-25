@@ -16,11 +16,15 @@ namespace Infrastructure.Repository.Implementations
         {
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooksByUserIdAsync(Guid userId)
+        public IQueryable<Book> GetAllBooksByUserIdAsync(Guid userId)
         {
-            return await _context.Books
-                .Where(b => b.UserId == userId)
-                .ToListAsync();
+            return _context.Books
+                .Where(b => b.UserId == userId);
+        }
+
+        public IQueryable<Book> GetAllForPaging()
+        {
+            return _context.Set<Book>();
         }
     }
 }

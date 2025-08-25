@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.BookDto;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,75 +21,79 @@ public class BookController : ControllerBase
     }
 
     // GET: api/book
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDto>>> GetAllBooks()
+    public async Task<ActionResult> GetAllBooks([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var books = await _bookService.GetAllBooksAsync();
+        var books = await _bookService.GetAllBooksAsync(page, pageSize);
         return Ok(books);
     }
 
     // GET: api/book/{id}
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = "User")]
     [HttpGet("{id}")]
     public async Task<ActionResult<BookDto>> GetBookById(Guid id)
     {
-        Claim? userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid userId = Guid.Parse(userIdClaim!.Value);
         try
         {
             var book = await _bookService.GetBookByIdAsync(id);
-            // kiem tra book nay co của nguoi do hay ko
-            if (book.UserId != userId)
-            {
-                return Unauthorized("You cant see this book if you dont own it.");
-            }
             return Ok(book);
-            
         }
-        catch (KeyNotFoundException ex)
+        catch (Exception ex)
         {
-            return NotFound(ex.Message);
+            return BadRequest(ex.Message);
         }
     }
 
     // GET: api/book/user/{userId}
     [HttpGet("user/{userId}")]
-    [Authorize(Roles = "user")]
-    public async Task<ActionResult<IEnumerable<BookOfUserDto>>> GetBooksByUserId(Guid userId)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> GetBooksByUserIdForAdmin(Guid userId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var books = await _bookService.GetAllBooksByUserIdAsync(userId);
+        var books = await _bookService.GetAllBooksByUserIdAsync(userId, page, pageSize);
         return Ok(books);
     }
 
-    [HttpGet("my-book")]
-    [Authorize(Roles = "user")]
-    public async Task<ActionResult<IEnumerable<BookOfUserDto>>> GetMyBook()
-    {
-        Claim? userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid userId = Guid.Parse(userIdClaim!.Value);
-
-        var books = await _bookService.GetAllBooksByUserIdAsync(userId);
-        return Ok(books);
-    }
-
-    // POST: api/book
-    [Authorize(Roles = "user")]
-    [HttpPost]
-    public async Task<ActionResult> AddBook([FromBody] BookCreateDto bookCreateDto)
-    {
-        await _bookService.AddBookAsync(bookCreateDto);
-        return Ok(new { message = "Book added successfully" });
-    }
-
-    // PUT: api/book
-    [Authorize(Roles = "user")]
-    [HttpPut]
-    public async Task<ActionResult> UpdateBook([FromBody] BookUpdateDto bookUpdateDto)
+    // GET: api/book/user/myBook
+    [HttpGet("myBook")]
+    [Authorize(Roles = "User")]
+    public async Task<ActionResult> GetMyBook([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         try
         {
-            await _bookService.UpdateBookAsync(bookUpdateDto);
+            var books = await _bookService.GetMyBook(page, pageSize);
+            return Ok(books);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // POST: api/book
+    [Authorize(Roles = "User")]
+    [HttpPost]
+    public async Task<ActionResult> AddBook([FromBody] BookCreateDto bookCreateDto)
+    {
+        try
+        {
+            await _bookService.AddBookAsync(bookCreateDto);
+            return Ok(new { message = "Book added successfully" });
+        }
+        catch (Exception ex) 
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // PUT: api/book
+    [Authorize(Roles = "User")]
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateBook(Guid id, [FromBody] BookUpdateDto bookUpdateDto)
+    {
+        try
+        {
+            await _bookService.UpdateBookAsync(bookUpdateDto,id);
             return Ok(new { message = "Book updated successfully" });
         }
         catch (KeyNotFoundException ex)
@@ -98,7 +103,7 @@ public class BookController : ControllerBase
     }
 
     // DELETE: api/book/{id}
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = "User")]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteBook(Guid id)
     {

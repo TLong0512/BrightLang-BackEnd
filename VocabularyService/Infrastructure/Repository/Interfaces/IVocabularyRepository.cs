@@ -9,6 +9,9 @@ namespace Infrastructure.Repository.Interfaces
 {
     public interface IVocabularyRepository : IGenericRepository<Vocabulary>
     {
-        Task<IEnumerable<Vocabulary>> GetAllVocabulariesByBookIdAsync(Guid bookId);
+        IQueryable<Vocabulary> GetAllVocabulariesByBookIdAsync(Guid bookId);
+        IQueryable<Vocabulary> GetAllForPaging();
+        Guid GetUserIdByBookId(Guid bookId);
+        Guid GetUserIdByVocabularyId(Guid vocabularyId);
     }
 }

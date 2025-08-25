@@ -18,16 +18,16 @@ namespace WebApi.Controllers
         }
 
         // GET: api/vocabulary
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VocabularyDto>>> GetAllVocabulary()
+        public async Task<ActionResult> GetAllVocabulary([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var vocabularies = await _vocabularyService.GetAllVocabularyAsync();
+            var vocabularies = await _vocabularyService.GetAllVocabularyAsync(page, pageSize);
             return Ok(vocabularies);
         }
 
         // GET: api/vocabulary/{id}
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<VocabularyDto>> GetVocabularyById(Guid id)
         {
@@ -43,16 +43,16 @@ namespace WebApi.Controllers
         }
 
         // GET: api/vocabulary/book/{bookId}
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "User")]
         [HttpGet("book/{bookId}")]
-        public async Task<ActionResult<IEnumerable<VocabularyInBookDto>>> GetVocabularyByBookId(Guid bookId)
+        public async Task<ActionResult> GetVocabularyByBookId(Guid bookId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var vocabularies = await _vocabularyService.GetVocabularyByBookIdAsync(bookId);
+            var vocabularies = await _vocabularyService.GetVocabularyByBookIdAsync(bookId, page, pageSize);
             return Ok(vocabularies);
         }
 
         // POST: api/vocabulary
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<ActionResult> AddVocabulary([FromBody] VocabularyCreateDto vocabularyCreateDto)
         {
@@ -61,13 +61,13 @@ namespace WebApi.Controllers
         }
 
         // PUT: api/vocabulary
-        [Authorize(Roles = "user")]
-        [HttpPut]
-        public async Task<ActionResult> UpdateVocabulary([FromBody] VocabularyUpdateDto vocabularyUpdateDto)
+        [Authorize(Roles = "User")]
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateVocabulary(Guid id, [FromBody] VocabularyUpdateDto vocabularyUpdateDto)
         {
             try
             {
-                await _vocabularyService.UpdateVocabularyAsync(vocabularyUpdateDto);
+                await _vocabularyService.UpdateVocabularyAsync(vocabularyUpdateDto, id);
                 return Ok(new { message = "Vocabulary updated successfully" });
             }
             catch (KeyNotFoundException ex)
@@ -77,7 +77,7 @@ namespace WebApi.Controllers
         }
 
         // DELETE: api/vocabulary/{id}
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "User")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteVocabulary(Guid id)
         {
