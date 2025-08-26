@@ -24,7 +24,7 @@ services:
       context: ./UserService
       dockerfile: Dockerfile # redundant, only for explicitness.
       args:
-        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Release}
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
     container_name: user-service
     environment:
       - ASPNETCORE_URLS=http://+:8080
@@ -72,7 +72,7 @@ services:
       context: ./VocabularyService
       dockerfile: Dockerfile # redundant, only for explicitness.
       args:
-        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Release}
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
     container_name: vocabulary-service
     environment:
       - ASPNETCORE_URLS=http://+:8080
@@ -119,7 +119,7 @@ services:
       context: ./QuestionBankService
       dockerfile: Dockerfile # redundant, only for explicitness.
       args:
-        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Release}
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
     container_name: question-bank-service
     environment:
       - ASPNETCORE_URLS=http://+:8080
