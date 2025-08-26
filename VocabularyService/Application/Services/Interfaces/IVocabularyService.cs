@@ -1,4 +1,5 @@
-﻿using Application.Dtos.VocabularyDto;
+﻿using Application.Dtos.BaseDto;
+using Application.Dtos.VocabularyDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,11 @@ namespace Application.Services.Interfaces
 {
     public interface IVocabularyService
     {
-        Task<IEnumerable<VocabularyDto>> GetAllVocabularyAsync();
-        Task<IEnumerable<VocabularyInBookDto>> GetVocabularyByBookIdAsync(Guid bookId);
+        Task<PageResultDto<VocabularyDto>> GetAllVocabularyAsync(int page, int pageSize);
+        Task<PageResultDto<VocabularyInBookDto>> GetVocabularyByBookIdAsync(Guid bookId, int page, int pageSize);
         Task<VocabularyDto> GetVocabularyByIdAsync(Guid id);
         Task AddVocabularyAsync(VocabularyCreateDto vocabularyCreateDto);
-        Task UpdateVocabularyAsync(VocabularyUpdateDto vocabularyUpdateDto);
+        Task UpdateVocabularyAsync(VocabularyUpdateDto vocabularyUpdateDto, Guid id);
         Task DeleteVocabularyAsync(Guid id);
     }
 }

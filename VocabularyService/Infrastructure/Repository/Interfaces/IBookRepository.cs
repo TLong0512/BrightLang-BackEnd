@@ -9,6 +9,7 @@ namespace Infrastructure.Repository.Interfaces
 {
     public interface IBookRepository : IGenericRepository<Book>
     {
-        Task<IEnumerable<Book>> GetAllBooksByUserIdAsync(Guid userId);
+        IQueryable<Book> GetAllBooksByUserIdAsync(Guid userId);
+        IQueryable<Book> GetAllForPaging();
     }
 }
