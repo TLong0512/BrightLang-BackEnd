@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.ContextDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GettAllContext()
         {
             try
@@ -45,6 +47,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddContext([FromBody] ContextAddDto ContextAddDto)
         {
             try
@@ -72,6 +75,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetContextById(Guid id)
         {
             try
@@ -101,6 +105,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateContext(Guid id, ContextUpdateDto ContextUpdateDto)
         {
             try
@@ -129,6 +134,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteContext(Guid id)
         {
             try

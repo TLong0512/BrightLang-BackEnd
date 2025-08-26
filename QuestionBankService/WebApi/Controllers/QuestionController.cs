@@ -3,6 +3,7 @@ using Application.Services;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,6 +48,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("generate-question/{rangeId}")]
+        [Authorize]
         public async Task<IActionResult> GenerateQuestionInARange(Guid rangeId)
         {
             try
@@ -101,6 +103,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddQuestion([FromBody] QuestionAddDto QuestionAddDto)
         {
             try
@@ -128,6 +131,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost("quick-add/{skilllevelId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> QuickAddQuestion(Guid skilllevelId,[FromBody] List<QuickQuestionAddDto> quickQuestionAddDto)
         {
             try
@@ -155,6 +159,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetQuestionById(Guid id)
         {
             try
@@ -184,6 +189,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateQuestion(Guid id, QuestionUpdateDto QuestionUpdateDto)
         {
             try
@@ -212,6 +218,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteQuestion(Guid id)
         {
             try

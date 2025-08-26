@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.LevelDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +46,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddLevel([FromBody] LevelAddDto LevelAddDto)
         {
             try
@@ -101,6 +103,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateLevel(Guid id, LevelUpdateDto LevelUpdateDto)
         {
             try
@@ -129,6 +132,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteLevel(Guid id)
         {
             try

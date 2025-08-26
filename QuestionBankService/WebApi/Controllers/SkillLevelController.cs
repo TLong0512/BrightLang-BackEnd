@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.SkillLevelDto;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +46,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddSkillLevel([FromBody] SkillLevelAddDto SkillLevelAddDto)
         {
             try
@@ -101,6 +103,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateSkillLevel(Guid id, SkillLevelUpdateDto SkillLevelUpdateDto)
         {
             try
@@ -129,6 +132,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteSkillLevel(Guid id)
         {
             try

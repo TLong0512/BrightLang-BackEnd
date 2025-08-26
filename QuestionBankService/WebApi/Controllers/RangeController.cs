@@ -3,6 +3,7 @@ using Application.Services.Implementations;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -77,6 +78,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRange([FromBody] RangeAddDto RangeAddDto)
         {
             try
@@ -133,6 +135,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRange(Guid id, RangeUpdateDto RangeUpdateDto)
         {
             try
@@ -161,6 +164,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRange(Guid id)
         {
             try

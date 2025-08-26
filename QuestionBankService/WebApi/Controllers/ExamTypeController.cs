@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.ExamTypeDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +46,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddExamType([FromBody] ExamTypeAddDto examTypeAddDto)
         {
             try
@@ -97,6 +99,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateExamType(Guid id, ExamTypeUpdateDto examTypeUpdateDto)
         {
             try
@@ -125,6 +128,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteExamType(Guid id)
         {
             try

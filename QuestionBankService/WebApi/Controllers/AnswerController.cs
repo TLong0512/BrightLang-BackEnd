@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.AnswerDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GettAllAnswer()
         {
             try
@@ -74,6 +76,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddAnswer([FromBody] AnswerAddDto AnswerAddDto)
         {
             try
@@ -101,6 +104,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetAnswerById(Guid id)
         {
             try
@@ -130,6 +134,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAnswer(Guid id, AnswerUpdateDto AnswerUpdateDto)
         {
             try
@@ -158,6 +163,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAnswer(Guid id)
         {
             try
