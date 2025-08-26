@@ -9,6 +9,9 @@ COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Application/Application.csproj", "Application/"]
 COPY ["WebApi/WebApi.csproj", "WebApi/"]
+
+# ENV NUGET_FALLBACK_PACKAGES=""
+
 RUN dotnet restore "./WebApi/WebApi.csproj" # cache restore layer
 COPY . .
 WORKDIR "/src/WebApi"
