@@ -147,15 +147,17 @@ namespace Application.Services.Implementations
                 foreach (var entity in quickQuestionAddDtos)
                 {
                     var range = listRange.FirstOrDefault(x => x.StartQuestionNumber <= entity.QuestionNumber && x.EndQuestionNumber >= entity.QuestionNumber);
-                    if(range == null|| entity.QuickContextAddDto.Content == null)
+                    if(range == null)
                     {
                         continue;
                     }
                     else
                     {
                         var listContext = await _unitOfWork.ContextRepository.GetByConditionAsync(x => x.RangeId == range.Id);
-                        var existContext = listContext.FirstOrDefault(x => x.Content == entity.QuickContextAddDto.Content);
-                        if(existContext == null)
+                        var existContext = listContext.Where(x => x.Content != "").FirstOrDefault(y => y.Content == entity.QuickContextAddDto.Content);
+
+                        //create new context if it had not exists yet or context = ""
+                        if(existContext == null || entity.QuickContextAddDto.Content == "")
                         {
                             ContextAddDto contextAddDto = new ContextAddDto
                             {
