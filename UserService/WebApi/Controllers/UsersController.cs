@@ -1,5 +1,6 @@
 ﻿using Application.Abstraction;
 using Application.Abstraction.Services;
+using Application.Dtos.BaseDtos;
 using Application.Dtos.UserDtos;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -21,12 +22,12 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<UserDto>>> GetUsers()
+    public async Task<ActionResult<PageResultDto<UserDto>>> GetUsers([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        IEnumerable<User> users = await unitOfWork.Users.GetAllAsync();
-        Dictionary<Guid, User> userMap = users.ToDictionary(u => u.Id); // for efficiency.
+        PageResultDto<User> users = await unitOfWork.Users.GetAllAsync(page, pageSize);
+        Dictionary<Guid, User> userMap = users.Items.ToDictionary(u => u.Id); // for efficiency.
         IEnumerable<Role> roles = await unitOfWork.Roles.GetAllAsync();
-        IEnumerable<Guid> userIds = users.Select(u => u.Id);
+        IEnumerable<Guid> userIds = users.Items.Select(u => u.Id);
         IEnumerable<UserRole> userRoles = await unitOfWork.UserRoles.FindAsync(ur => userIds.Contains(ur.UserId));
 
         IEnumerable<UserDto> userDtos = userRoles.GroupBy(ur => ur.UserId)
@@ -43,7 +44,13 @@ public class UsersController : ControllerBase
                     Roles = thisUserRoles.ToArray(),
                 };
             });
-        return userDtos.ToList();
+        return new PageResultDto<UserDto>()
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItem = users.TotalItem,
+            Items = userDtos.ToList(),
+        };
     }
 
     [HttpGet("{id:guid}")]

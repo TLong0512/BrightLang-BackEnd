@@ -1,4 +1,5 @@
 ﻿using Application.Abstraction.Repositories;
+using Application.Dtos.BaseDtos;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -14,9 +15,25 @@ public class GenericRepository<T, TKey> : IGenericRepository<T, TKey> where T : 
     }
 
     public virtual async Task<IEnumerable<T>> GetAllAsync()
-    {
+        {
         List<T> entities = await _context.Set<T>().ToListAsync();
         return entities;
+    }
+
+    public virtual async Task<PageResultDto<T>> GetAllAsync(int page = 1, int pageSize = 10)
+    {
+        List<T> entities = await _context.Set<T>()
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        int totalItem = await _context.Set<T>().CountAsync();
+        return new PageResultDto<T>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItem = totalItem,
+            Items = entities,
+        };
     }
 
     public virtual async Task<T?> GetByIdAsync(TKey id)
