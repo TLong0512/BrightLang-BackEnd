@@ -1,0 +1,12 @@
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\bin\Debug\net8.0\Domain.deps.json
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\bin\Debug\net8.0\Domain.dll
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\bin\Debug\net8.0\Domain.pdb
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\Domain.sourcelink.json
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\Domain.dll
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\refint\Domain.dll
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\Domain.pdb
+D:\work-space\dotNet\fresher\BrightLang-BackEnd\QuestionBankService\Domain\obj\Debug\net8.0\ref\Domain.dll
