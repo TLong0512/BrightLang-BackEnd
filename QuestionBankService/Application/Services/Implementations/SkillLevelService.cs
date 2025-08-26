@@ -1,0 +1,103 @@
+﻿using Application.Dtos.SkillLevelDto;
+using Application.Services.Intefaces;
+using AutoMapper;
+using Domain.Entities;
+using Infrastructure.UnitOfWorks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Application.Services.Implementations
+{
+    public class SkillLevelService : ISkillLevelService
+    {
+        protected readonly IUnitOfWork _unitOfWork;
+        protected readonly IMapper _mapper;
+
+        public SkillLevelService(IUnitOfWork unitOfWork, IMapper mapper)
+        {
+            this._unitOfWork = unitOfWork;
+            this._mapper = mapper;
+        }
+
+        public async Task<bool> AddSkillLevelAsync(SkillLevelAddDto skillLevelAddDto)
+        {
+
+            var existingLevel = await _unitOfWork.LevelRepository.GetByIdAsync(skillLevelAddDto.LevelId);
+            var existingSkill = await _unitOfWork.SkillRepository.GetByIdAsync(skillLevelAddDto.SkillId);
+
+            if (existingLevel == null || existingSkill == null)
+            {
+                return false;
+            }
+            else
+            {
+                var newSkillLevel = _mapper.Map<SkillLevel>(skillLevelAddDto);
+                await _unitOfWork.SkillLevelRepository.AddAsync(newSkillLevel, new Guid());
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+        }
+
+        public async Task<bool> DeleteSkillLevelAsync(Guid id)
+        {
+            var SkillLevel = await _unitOfWork.SkillLevelRepository.GetByIdAsync(id);
+
+            if (SkillLevel == null)
+            {
+                return false;
+            }
+            else
+            {
+                await _unitOfWork.SkillLevelRepository.Delete(SkillLevel);
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+        }
+
+        public async Task<IEnumerable<SkillLevelViewDto>> GellAllSkillLevelAsync()
+        {
+            var result = await _unitOfWork.SkillLevelRepository.GetAllSkillLevelsAsync();
+            var listResultDto = _mapper.Map<IEnumerable<SkillLevelViewDto>>(result);
+            var orderListResultDto = listResultDto.OrderBy(x => x.LevelName);
+            return orderListResultDto;
+        }
+
+        public async Task<SkillLevelViewDto> GetSkillLevelByIdAsync(Guid id)
+        {
+            var result = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(id);
+            return _mapper.Map<SkillLevelViewDto>(result);
+        }
+
+        public async Task<SkillLevelViewDto> UpdateSkillLevelAsync(Guid id, SkillLevelUpdateDto skillLevelUpdateDto)
+        {
+            var skillLevel = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(id);
+            if (skillLevel == null)
+            {
+                return null;
+            }
+            else
+            {
+                var existingLevel = await _unitOfWork.LevelRepository.GetByIdAsync(skillLevelUpdateDto.LevelId);
+                var existingSkill = await _unitOfWork.SkillRepository.GetByIdAsync(skillLevelUpdateDto.SkillId);
+
+                if (existingLevel == null || existingSkill == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    var updatedSkillLevel = _mapper.Map<SkillLevel>(skillLevelUpdateDto);
+                    skillLevel.SkillId = updatedSkillLevel.SkillId;
+                    skillLevel.LevelId = updatedSkillLevel.LevelId;
+                    await _unitOfWork.SkillLevelRepository.Update(skillLevel, new Guid());
+                    await _unitOfWork.SaveChangesAsync();
+                    return _mapper.Map<SkillLevelViewDto>(skillLevel);
+                }
+            }
+        }
+
+    }
+}
