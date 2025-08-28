@@ -28,12 +28,12 @@ namespace Infrastructure.Repository.Implementations
                 .Where(v => v.BookId == bookId);
         }
 
-        public Guid GetUserIdByBookId(Guid bookId)
+        public Guid? GetUserIdByBookId(Guid bookId)
         {
-            return _context.Vocabularies
-                .Where(v => v.BookId == bookId)
-                .Select(v => v.Book!.UserId)  
-                .FirstOrDefault();
+            return (from item in _context.Books
+                    where item.Id == bookId
+                    select (Guid?)item.UserId)
+           .FirstOrDefault();
         }
 
         public Guid GetUserIdByVocabularyId(Guid vocabularyId)
