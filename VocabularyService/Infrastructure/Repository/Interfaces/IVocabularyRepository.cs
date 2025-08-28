@@ -11,7 +11,7 @@ namespace Infrastructure.Repository.Interfaces
     {
         IQueryable<Vocabulary> GetAllVocabulariesByBookIdAsync(Guid bookId);
         IQueryable<Vocabulary> GetAllForPaging();
-        Guid GetUserIdByBookId(Guid bookId);
+        Guid? GetUserIdByBookId(Guid bookId);
         Guid GetUserIdByVocabularyId(Guid vocabularyId);
     }
 }
