@@ -46,7 +46,7 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("filter/level{levelId}")]
+        [HttpGet("filter/level/{levelId}")]
         public async Task<IActionResult> GetQuestionByContextId(Guid levelId)
         {
             try

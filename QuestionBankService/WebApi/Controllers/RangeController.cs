@@ -48,7 +48,7 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpGet("filter/skill-level{skillLevelId}")]
+        [HttpGet("filter/skill-level/{skillLevelId}")]
         public async Task<IActionResult> GetAllRangeInSkillLevelBySkillLevelId(Guid skillLevelId)
         {
             try

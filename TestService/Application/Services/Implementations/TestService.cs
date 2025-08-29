@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Services.Implementations
 {
@@ -71,7 +70,19 @@ namespace Application.Services.Implementations
             };
         }
 
-        public async Task SubmitAnswerInATest(Guid userId, Guid testId, List<Guid> listAnswerIds)
+
+
+        public Task<TestReviewDto> GetTestDetailAsync(List<QuestionDetailDto> questionDetailDtos, IEnumerable<Guid> chooseAnswerIds)
+        {
+            var result = new TestReviewDto
+            {
+                QuestionDetails = questionDetailDtos,
+                ChoseAnswerIds = chooseAnswerIds
+            };
+            return Task.FromResult(result);
+        }
+
+        public async Task SubmitAnswerInATest(Guid userId, Guid testId, List<Guid> listAnswerIds, List<Guid> listTrueAnswerIds)
         {
             foreach(var answerId in listAnswerIds)
             {
@@ -79,8 +90,16 @@ namespace Application.Services.Implementations
                 await _unitOfWork.TestAnswerRepository.AddAsync(testAnswer, userId);
                 await _unitOfWork.SaveChangesAsync();
             }
-
+            var test = await _unitOfWork.TestRepository.GetByIdAsync(testId);
+            int cnt = 0;
+            foreach(var id in listAnswerIds)
+            {
+                if (listTrueAnswerIds.Contains(id))
+                    cnt++;
+            }
+            test.Score = cnt;
+            await _unitOfWork.TestRepository.Update(test, userId);
+            await _unitOfWork.SaveChangesAsync();
         }
-        
     }
 }

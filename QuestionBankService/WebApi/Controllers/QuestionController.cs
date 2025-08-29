@@ -49,7 +49,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("generate/range/{rangeId}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GenerateQuestionByRangeId(Guid rangeId)
         {
             try
@@ -75,7 +75,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("generate/skill-level/{skillLevelId}/{number?}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GenerateQuestionBySkillLevelId(Guid skillLevelId, int number = 2)
         {
             try
@@ -105,7 +105,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("generate/level/{levelId}/{numberPerSkillLevel?}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GenerateQuestionByLevelId(Guid levelId, int numberPerSkillLevel = 2)
         {
             try
@@ -135,7 +135,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("generate/examType/{examTypeId}/{numberPerSkillLevel?}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GenerateQuestionByExamTypeId(Guid examTypeId, int numberPerSkillLevel = 2)
         {
             try
@@ -255,7 +255,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost("quick-add/skill/{skillId}/exam-type/{examTypeId}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> QuickAddQuestion(Guid skillId, Guid examTypeId,  [FromBody] List<QuickQuestionAddDto> quickQuestionAddDto)
         {
             try
@@ -263,13 +263,13 @@ namespace WebApi.Controllers
                 if (quickQuestionAddDto == null)
                 { return BadRequest("Invalid data"); }
 
-                //var userIdClaim = User.FindFirst("nameid")?.Value;
-                //if (string.IsNullOrEmpty(userIdClaim))
-                //    return Unauthorized("UserId not found in token");
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
 
-                //Guid userId = Guid.Parse(userIdClaim);
+                Guid userId = Guid.Parse(userIdClaim);
 
-                var result = await _questionService.QuickAddQuestion(skillId, examTypeId,quickQuestionAddDto, new Guid());
+                var result = await _questionService.QuickAddQuestion(skillId, examTypeId,quickQuestionAddDto, userId);
                 if (result == false)
                 {
                     return BadRequest();
