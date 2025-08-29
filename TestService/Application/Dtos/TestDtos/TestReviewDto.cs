@@ -10,7 +10,7 @@ namespace Application.Dtos.TestDtos
     public class TestReviewDto
     {
         public Guid TestId { get; set; }
-        public List<QuestionDetailDto> QuestionDetails { get; set; } 
+        public IEnumerable<QuestionDetailDto> QuestionDetails { get; set; } 
         public IEnumerable<Guid> ChoseAnswerIds { get; set; }
     }
 }

@@ -21,15 +21,15 @@ namespace WebApi.Controllers
         private readonly HttpClient _httpClient;
         private const string BaseApiUrl = "http://localhost:5003/api";
         private readonly ITestService _testService;
-        private readonly ITestAnswerSevice _testAnswerService;
+        private readonly ITestQuestionService _testQuestionService;
 
         private readonly IMapper _mapper;
-        public TestController(HttpClient httpClient, ITestService testService, IMapper mapper, ITestAnswerSevice testAnswerService)
+        public TestController(HttpClient httpClient, ITestService testService, IMapper mapper, ITestQuestionService testQuestionService)
         {
             _httpClient = httpClient;
             _testService = testService;
             _mapper = mapper;
-            _testAnswerService = testAnswerService;
+            _testQuestionService = testQuestionService;
         }
 
         [HttpPost("create-a-test/{numberPerSkillLevel?}")]
@@ -39,7 +39,7 @@ namespace WebApi.Controllers
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode, "Request Failed");
             var json = await response.Content.ReadAsStringAsync();
-            var questionIds = JsonSerializer.Deserialize<List<Guid>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var questionIds = JsonSerializer.Deserialize<IEnumerable<Guid>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             var testId = await _testService.CreateTestAsync(new Guid(), questionIds);
 
             var requestContent = new StringContent(
@@ -50,7 +50,7 @@ namespace WebApi.Controllers
             if (!summaryResponse.IsSuccessStatusCode)
                 return StatusCode((int)summaryResponse.StatusCode, "Request Failed when fetching question summaries");
             var summaryJson = await summaryResponse.Content.ReadAsStringAsync();
-            var listQuestionResponse = JsonSerializer.Deserialize<List<QuestionSummaryDto>>(summaryJson, new JsonSerializerOptions
+            var listQuestionResponse = JsonSerializer.Deserialize<IEnumerable<QuestionSummaryDto>>(summaryJson, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
@@ -92,20 +92,20 @@ namespace WebApi.Controllers
             {
                 return NotFound();
             }
-            var answerIds = await _testAnswerService.GetAnswerIdsInTestIdAsync(testId);
+            var questionIds = await _testQuestionService.GetQuestionIdsInTestIdAsync(testId);
             var requestContent = new StringContent(
-                                JsonSerializer.Serialize(answerIds),
+                                JsonSerializer.Serialize(questionIds),
                                 Encoding.UTF8,
                                 "application/json");
-            var summaryResponse = await _httpClient.PostAsync($"{BaseApiUrl}/Question/get-by-list/detail", requestContent);
-            if (!summaryResponse.IsSuccessStatusCode)
-                return StatusCode((int)summaryResponse.StatusCode, "Request Failed when fetching question details");
-            var summaryJson = await summaryResponse.Content.ReadAsStringAsync();
-            var listQuestionResponse = JsonSerializer.Deserialize<List<QuestionDetailDto>>(summaryJson, new JsonSerializerOptions
+            var detailResponse = await _httpClient.PostAsync($"{BaseApiUrl}/Question/get-by-list/detail", requestContent);
+            if (!detailResponse.IsSuccessStatusCode)
+                return StatusCode((int)detailResponse.StatusCode, "Request Failed when fetching question details");
+            var summaryJson = await detailResponse.Content.ReadAsStringAsync();
+            var listQuestionResponse = JsonSerializer.Deserialize<IEnumerable<QuestionDetailDto>>(summaryJson, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
-            var result = await _testService.GetTestDetailAsync(listQuestionResponse, answerIds);
+            var result = await _testService.GetTestDetailAsync(testId,listQuestionResponse, questionIds);
             return Ok(result);
         }
     }

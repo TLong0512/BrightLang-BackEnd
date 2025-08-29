@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DefaultContext))]
-    [Migration("20250826015143_init")]
-    partial class init
+    [Migration("20250829163037_edit-seed-data")]
+    partial class editseeddata
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -156,14 +156,14 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b0f20da4-09d4-4ab8-ab62-b031e00ba9f2"),
+                            Id = new Guid("e53b3aef-3a9f-4453-a54b-165626621689"),
                             Description = "TOPIK I (Cấp 1 và 2) là kỳ thi kiểm tra trình độ tiếng Hàn cấp độ sơ cấp, đánh giá kỹ năng nghe và đọc cơ bản dành cho người không phải bản ngữ. Kỳ thi kiểm tra khả năng giao tiếp đơn giản với 800–2.000 từ vựng. Được sử dụng cho nhập học đại học, xin visa (ví dụ: visa kết hôn hoặc định cư tại Hàn Quốc), công việc cấp nhập môn và mục tiêu học ngôn ngữ cá nhân, chứng chỉ TOPIK I có giá trị trong hai năm và được công nhận toàn cầu.",
                             IsDeleted = false,
                             Name = "TOPIK I"
                         },
                         new
                         {
-                            Id = new Guid("38af4f71-911a-422f-9424-f3a24a3427f2"),
+                            Id = new Guid("0d3b1667-7f36-4247-a915-2e06eef6532b"),
                             Description = "TOPIK II (Cấp 3–6) là kỳ thi kiểm tra trình độ tiếng Hàn từ trung cấp đến cao cấp, đánh giá kỹ năng nghe, đọc và viết dành cho người không phải bản ngữ. Kỳ thi đánh giá khả năng giao tiếp từ mức thông thường đến gần như người bản xứ. Được sử dụng cho nhập học đại học, công việc chuyên môn, xin visa, học bổng và thăng tiến nghề nghiệp, đặc biệt ở Việt Nam, chứng chỉ TOPIK II có giá trị trong hai năm và được công nhận toàn cầu.",
                             IsDeleted = false,
                             Name = "TOPIK II"
@@ -210,43 +210,43 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e7b61c72-a094-4f81-806e-1a75a878557d"),
-                            ExamTypeId = new Guid("b0f20da4-09d4-4ab8-ab62-b031e00ba9f2"),
+                            Id = new Guid("0ae30081-a113-4652-af54-195763ce7045"),
+                            ExamTypeId = new Guid("e53b3aef-3a9f-4453-a54b-165626621689"),
                             IsDeleted = false,
                             Name = "Cấp 1"
                         },
                         new
                         {
-                            Id = new Guid("fcffbd73-5454-4af6-942d-645d120edac6"),
-                            ExamTypeId = new Guid("b0f20da4-09d4-4ab8-ab62-b031e00ba9f2"),
+                            Id = new Guid("e519693e-4a45-424a-a023-ed78e8ddd734"),
+                            ExamTypeId = new Guid("e53b3aef-3a9f-4453-a54b-165626621689"),
                             IsDeleted = false,
                             Name = "Cấp 2"
                         },
                         new
                         {
-                            Id = new Guid("3d463174-b4f8-4604-9056-e3638571bc40"),
-                            ExamTypeId = new Guid("38af4f71-911a-422f-9424-f3a24a3427f2"),
+                            Id = new Guid("621f0da6-d50a-40b7-9be0-ba44df11b00f"),
+                            ExamTypeId = new Guid("0d3b1667-7f36-4247-a915-2e06eef6532b"),
                             IsDeleted = false,
                             Name = "Cấp 3"
                         },
                         new
                         {
-                            Id = new Guid("58b35613-caf6-42f3-ace9-195f39f2ca86"),
-                            ExamTypeId = new Guid("38af4f71-911a-422f-9424-f3a24a3427f2"),
+                            Id = new Guid("f0860c43-68d7-4ef2-87ff-b4a5dfb50162"),
+                            ExamTypeId = new Guid("0d3b1667-7f36-4247-a915-2e06eef6532b"),
                             IsDeleted = false,
                             Name = "Cấp 4"
                         },
                         new
                         {
-                            Id = new Guid("7dc94003-4c5e-44d9-bc58-cf935d8f5fbc"),
-                            ExamTypeId = new Guid("38af4f71-911a-422f-9424-f3a24a3427f2"),
+                            Id = new Guid("87b10d91-5170-45f6-b6ed-639db7bacafc"),
+                            ExamTypeId = new Guid("0d3b1667-7f36-4247-a915-2e06eef6532b"),
                             IsDeleted = false,
                             Name = "Cấp 5"
                         },
                         new
                         {
-                            Id = new Guid("40945347-4a3d-4938-9ba5-76901120f951"),
-                            ExamTypeId = new Guid("38af4f71-911a-422f-9424-f3a24a3427f2"),
+                            Id = new Guid("346a2201-2a1f-41c8-a705-bd49ef2f5fa8"),
+                            ExamTypeId = new Guid("0d3b1667-7f36-4247-a915-2e06eef6532b"),
                             IsDeleted = false,
                             Name = "Cấp 6"
                         });
@@ -344,335 +344,335 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b824e232-ea18-4b28-9211-f646fd1896ef"),
+                            Id = new Guid("c6dcb040-a6de-44a7-b167-a1f01256e9b2"),
                             EndQuestionNumber = 6,
                             IsDeleted = false,
                             Name = "Nghe câu ngắn, chọn đáp án đúng về tên, địa điểm, thời gian, hành động.",
-                            SkillLevelId = new Guid("e8d1e161-73a9-46c0-abc3-1552188a0ead"),
+                            SkillLevelId = new Guid("7deb2d52-b4d8-4f0e-ae98-a044a1dcc3e0"),
                             StartQuestionNumber = 1
                         },
                         new
                         {
-                            Id = new Guid("67d9372e-53b5-42f6-b942-fb9403c511df"),
+                            Id = new Guid("6b319e61-6c3d-41a2-a7e2-a8bea8bcbb6a"),
                             EndQuestionNumber = 10,
                             IsDeleted = false,
                             Name = "Chọn ý chính hoặc thông tin chi tiết trong hội thoại.",
-                            SkillLevelId = new Guid("e8d1e161-73a9-46c0-abc3-1552188a0ead"),
+                            SkillLevelId = new Guid("7deb2d52-b4d8-4f0e-ae98-a044a1dcc3e0"),
                             StartQuestionNumber = 7
                         },
                         new
                         {
-                            Id = new Guid("135b5eea-7144-4ee2-94fd-2a4b4ca26402"),
+                            Id = new Guid("d8629bba-e900-40a5-949e-8c9bf2d42797"),
                             EndQuestionNumber = 5,
                             IsDeleted = false,
                             Name = "Điền từ/cụm từ vào chỗ trống trong câu đơn giản.",
-                            SkillLevelId = new Guid("c5afb485-fb72-4f70-842d-5f785281b516"),
+                            SkillLevelId = new Guid("33c0fe80-ceb8-4e96-8c5d-eaf68abba27e"),
                             StartQuestionNumber = 1
                         },
                         new
                         {
-                            Id = new Guid("21919199-2703-4d0f-92b5-b3046cdf7005"),
+                            Id = new Guid("0a917d61-8a93-4c89-abb8-994d7519e0e1"),
                             EndQuestionNumber = 10,
                             IsDeleted = false,
                             Name = "Chọn ngữ pháp phù hợp với câu.",
-                            SkillLevelId = new Guid("c5afb485-fb72-4f70-842d-5f785281b516"),
+                            SkillLevelId = new Guid("33c0fe80-ceb8-4e96-8c5d-eaf68abba27e"),
                             StartQuestionNumber = 6
                         },
                         new
                         {
-                            Id = new Guid("4ee1ec87-0115-479b-a433-344dd1796364"),
+                            Id = new Guid("699a7397-7baf-447f-a007-abbec207a33f"),
                             EndQuestionNumber = 15,
                             IsDeleted = false,
                             Name = "Trả lời câu hỏi về thông báo, biển báo, hướng dẫn đơn giản.",
-                            SkillLevelId = new Guid("c5afb485-fb72-4f70-842d-5f785281b516"),
+                            SkillLevelId = new Guid("33c0fe80-ceb8-4e96-8c5d-eaf68abba27e"),
                             StartQuestionNumber = 11
                         },
                         new
                         {
-                            Id = new Guid("65d010e8-10c3-4336-9d1a-d01160dec39e"),
+                            Id = new Guid("a7f085c1-128d-456c-850d-589854124aff"),
                             EndQuestionNumber = 15,
                             IsDeleted = false,
                             Name = "Chọn thông tin chi tiết hoặc ý chính trong đoạn hội thoại dài hơn.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("a39bb6dc-07f2-44ea-bb10-9b69ae48dfed"),
                             StartQuestionNumber = 11
                         },
                         new
                         {
-                            Id = new Guid("291ab660-46c5-441e-bf10-76c5b516e706"),
+                            Id = new Guid("0946f08f-b6dc-4757-87ec-137d73a359cd"),
                             EndQuestionNumber = 20,
                             IsDeleted = false,
                             Name = "Chọn thông tin bổ sung từ thông báo hoặc đoạn hội thoại.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("a39bb6dc-07f2-44ea-bb10-9b69ae48dfed"),
                             StartQuestionNumber = 16
                         },
                         new
                         {
-                            Id = new Guid("19bdbded-e2c6-4595-adb8-06a33bd918f4"),
+                            Id = new Guid("1114d572-88b0-44a0-a90d-d28d0c81fed5"),
                             EndQuestionNumber = 25,
                             IsDeleted = false,
                             Name = "Chọn thái độ người nói hoặc ý nghĩa câu nói.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("a39bb6dc-07f2-44ea-bb10-9b69ae48dfed"),
                             StartQuestionNumber = 21
                         },
                         new
                         {
-                            Id = new Guid("2d76b832-7ce6-44d8-8c21-8693d992fe1a"),
+                            Id = new Guid("ac186a0f-91ea-4474-a209-6ebd4177755a"),
                             EndQuestionNumber = 30,
                             IsDeleted = false,
                             Name = "Chọn mục đích người nói hoặc thông tin chi tiết nâng cao.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("a39bb6dc-07f2-44ea-bb10-9b69ae48dfed"),
                             StartQuestionNumber = 26
                         },
                         new
                         {
-                            Id = new Guid("0fbcf9e9-3585-4fc5-b85a-6773b8affb4d"),
+                            Id = new Guid("df7fc211-e1a2-4f59-bf22-353c9873f69d"),
                             EndQuestionNumber = 20,
                             IsDeleted = false,
                             Name = "Điền từ/cụm từ trong đoạn văn ngắn.",
-                            SkillLevelId = new Guid("038dc84d-84bf-4017-8b51-49041d7c69f1"),
+                            SkillLevelId = new Guid("b84fce53-5cb4-4739-9644-b4470c77c4ed"),
                             StartQuestionNumber = 16
                         },
                         new
                         {
-                            Id = new Guid("4a044cb3-57e1-4530-b0d5-ca157cd95420"),
+                            Id = new Guid("799d184c-da86-44d9-8089-6b9d7bb0478e"),
                             EndQuestionNumber = 25,
                             IsDeleted = false,
                             Name = "Chọn thông tin chi tiết trong đoạn văn ngắn.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("b84fce53-5cb4-4739-9644-b4470c77c4ed"),
                             StartQuestionNumber = 21
                         },
                         new
                         {
-                            Id = new Guid("f79f4122-dfd6-4c73-b818-2f29dbef43e8"),
+                            Id = new Guid("cc488c41-b2f8-4426-a6f8-6b66010749aa"),
                             EndQuestionNumber = 30,
                             IsDeleted = false,
                             Name = "Điền từ/cụm từ vào câu trong đoạn văn.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("b84fce53-5cb4-4739-9644-b4470c77c4ed"),
                             StartQuestionNumber = 26
                         },
                         new
                         {
-                            Id = new Guid("176ea83c-dff6-4b0f-a2d0-886487a7b989"),
+                            Id = new Guid("ca70d90e-2812-46dd-ba70-e71fa3f4f6b8"),
                             EndQuestionNumber = 35,
                             IsDeleted = false,
                             Name = "Chọn ngữ pháp phù hợp trong đoạn văn.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("b84fce53-5cb4-4739-9644-b4470c77c4ed"),
                             StartQuestionNumber = 31
                         },
                         new
                         {
-                            Id = new Guid("756aefc0-5d21-4aaa-8c42-e4f2a7ef168f"),
+                            Id = new Guid("903931a9-e6dd-407e-be43-694441074ad1"),
                             EndQuestionNumber = 40,
                             IsDeleted = false,
                             Name = "Chọn ý chính hoặc thông tin chi tiết trong đoạn văn.",
-                            SkillLevelId = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            SkillLevelId = new Guid("b84fce53-5cb4-4739-9644-b4470c77c4ed"),
                             StartQuestionNumber = 36
                         },
                         new
                         {
-                            Id = new Guid("78531118-1460-470a-9bbf-bfe41a1f49fc"),
+                            Id = new Guid("50258a43-e1a2-49b1-855d-d89803f05711"),
                             EndQuestionNumber = 3,
                             IsDeleted = false,
                             Name = "Nghe hội thoại ngắn và chọn tranh/đáp án phù hợp.",
-                            SkillLevelId = new Guid("bcb3d3cd-a148-4562-8b67-ee37c0263bc6"),
+                            SkillLevelId = new Guid("d82536ef-234d-46bf-abba-5d2c91d5548d"),
                             StartQuestionNumber = 1
                         },
                         new
                         {
-                            Id = new Guid("ef5c612c-2d81-4254-9bfb-dc8aadc8435b"),
+                            Id = new Guid("d7fed0d1-1fcf-4454-9478-f2f1832f9558"),
                             EndQuestionNumber = 8,
                             IsDeleted = false,
                             Name = "Nghe câu/đoạn hội thoại đơn giản rồi chọn thông tin đúng.",
-                            SkillLevelId = new Guid("bcb3d3cd-a148-4562-8b67-ee37c0263bc6"),
+                            SkillLevelId = new Guid("d82536ef-234d-46bf-abba-5d2c91d5548d"),
                             StartQuestionNumber = 4
                         },
                         new
                         {
-                            Id = new Guid("505d8202-28a9-4d86-bd97-94985fa4b05d"),
+                            Id = new Guid("eac6e764-2b02-4766-afde-6c012f5b81eb"),
                             EndQuestionNumber = 12,
                             IsDeleted = false,
                             Name = "Nghe thông báo/hội thoại ngắn rồi chọn đáp án phù hợp với nội dung chính.",
-                            SkillLevelId = new Guid("bcb3d3cd-a148-4562-8b67-ee37c0263bc6"),
+                            SkillLevelId = new Guid("d82536ef-234d-46bf-abba-5d2c91d5548d"),
                             StartQuestionNumber = 9
                         },
                         new
                         {
-                            Id = new Guid("815f931d-ac7d-4052-bfe0-c1eb7f48c37a"),
+                            Id = new Guid("de568e8e-6760-460a-b81e-04f3398d1d13"),
                             EndQuestionNumber = 4,
                             IsDeleted = false,
                             Name = "Chọn ngữ pháp phù hợp cho câu văn.",
-                            SkillLevelId = new Guid("1127b458-58e3-482c-8c9a-7cb897482375"),
+                            SkillLevelId = new Guid("1484e946-1ace-4a2b-bafc-b23e6acb0c83"),
                             StartQuestionNumber = 1
                         },
                         new
                         {
-                            Id = new Guid("ab9f96b1-dd7a-4361-82a5-98b849cb0a7c"),
+                            Id = new Guid("9ae24b34-77f3-4910-a1c0-7aea229c9e42"),
                             EndQuestionNumber = 8,
                             IsDeleted = false,
                             Name = "Chọn chủ đề phù hợp dựa vào ảnh.",
-                            SkillLevelId = new Guid("1127b458-58e3-482c-8c9a-7cb897482375"),
+                            SkillLevelId = new Guid("1484e946-1ace-4a2b-bafc-b23e6acb0c83"),
                             StartQuestionNumber = 5
                         },
                         new
                         {
-                            Id = new Guid("6056c922-bbac-4ad7-8109-1d83e54a1977"),
+                            Id = new Guid("24658e93-6c68-4646-9376-faf7dbbb2f5a"),
                             EndQuestionNumber = 12,
                             IsDeleted = false,
                             Name = "Chọn nội dung tương ứng với biểu đồ hoặc thông báo.",
-                            SkillLevelId = new Guid("1127b458-58e3-482c-8c9a-7cb897482375"),
+                            SkillLevelId = new Guid("1484e946-1ace-4a2b-bafc-b23e6acb0c83"),
                             StartQuestionNumber = 9
                         },
                         new
                         {
-                            Id = new Guid("9d5b8a10-c8f6-40a5-8ad3-3fb17098b0c1"),
+                            Id = new Guid("13988bbf-a5fa-4f6b-be3f-8ef0413870f4"),
                             EndQuestionNumber = 16,
                             IsDeleted = false,
                             Name = "Nghe hội thoại có tình huống rồi chọn hành động hoặc phản ứng thích hợp.",
-                            SkillLevelId = new Guid("8aa5e695-9c2f-4f2b-a71d-482618517617"),
+                            SkillLevelId = new Guid("494e3aa3-f49f-4202-bf7d-3b9ce975db18"),
                             StartQuestionNumber = 13
                         },
                         new
                         {
-                            Id = new Guid("9c63602d-30b7-433b-8091-44656cfb4bbc"),
+                            Id = new Guid("6b30c4fc-000b-4cd6-85a1-213b4ac235ff"),
                             EndQuestionNumber = 21,
                             IsDeleted = false,
                             Name = "Nghe đoạn hội thoại dài hơn rồi chọn đáp án đúng với mục đích hoặc ý chính.",
-                            SkillLevelId = new Guid("8aa5e695-9c2f-4f2b-a71d-482618517617"),
+                            SkillLevelId = new Guid("494e3aa3-f49f-4202-bf7d-3b9ce975db18"),
                             StartQuestionNumber = 17
                         },
                         new
                         {
-                            Id = new Guid("23390cda-3b35-44fa-9e65-14c71ccfdf3d"),
+                            Id = new Guid("15d5e052-77a8-476d-b1c1-21dc25fdbfce"),
                             EndQuestionNumber = 24,
                             IsDeleted = false,
                             Name = "Nghe hội thoại ngắn rồi chọn nội dung tương ứng với phần gạch chân.",
-                            SkillLevelId = new Guid("8aa5e695-9c2f-4f2b-a71d-482618517617"),
+                            SkillLevelId = new Guid("494e3aa3-f49f-4202-bf7d-3b9ce975db18"),
                             StartQuestionNumber = 22
                         },
                         new
                         {
-                            Id = new Guid("98d23989-7ed5-4680-9ef0-acde9f106a95"),
+                            Id = new Guid("2ee42488-2a13-4c3e-a0dd-df86ea4e7a3b"),
                             EndQuestionNumber = 15,
                             IsDeleted = false,
                             Name = "Sắp xếp thứ tự câu văn sao cho hợp lý.",
-                            SkillLevelId = new Guid("b163baf3-c72b-4763-b23b-001f7747e36c"),
+                            SkillLevelId = new Guid("2af49ff8-3dcb-4b98-8401-de7eca0cd335"),
                             StartQuestionNumber = 13
                         },
                         new
                         {
-                            Id = new Guid("cc07c3d7-3e45-4114-abfe-ba8d21889bda"),
+                            Id = new Guid("db1a4fe2-d703-4d52-a23b-b9bb0aec1c1a"),
                             EndQuestionNumber = 22,
                             IsDeleted = false,
                             Name = "Điền từ/cụm từ vào chỗ trống trong đoạn văn.",
-                            SkillLevelId = new Guid("b163baf3-c72b-4763-b23b-001f7747e36c"),
+                            SkillLevelId = new Guid("2af49ff8-3dcb-4b98-8401-de7eca0cd335"),
                             StartQuestionNumber = 16
                         },
                         new
                         {
-                            Id = new Guid("096d3210-1a35-4861-a58e-0988ad989521"),
+                            Id = new Guid("6c5bf929-56c8-491b-81bd-182c921af5ed"),
                             EndQuestionNumber = 24,
                             IsDeleted = false,
                             Name = "Chọn đáp án phù hợp với phần gạch chân trong đoạn văn.",
-                            SkillLevelId = new Guid("b163baf3-c72b-4763-b23b-001f7747e36c"),
+                            SkillLevelId = new Guid("2af49ff8-3dcb-4b98-8401-de7eca0cd335"),
                             StartQuestionNumber = 22
                         },
                         new
                         {
-                            Id = new Guid("9136138a-c6d3-4411-a6fd-75e2d946905b"),
+                            Id = new Guid("0ee524c5-2e02-4baf-ae1d-fbb0e4e4cd83"),
                             EndQuestionNumber = 28,
                             IsDeleted = false,
                             Name = "Nghe hội thoại trung bình/dài rồi điền thông tin hoặc chọn ý chính.",
-                            SkillLevelId = new Guid("5bda5fed-c4d5-4707-879d-b6abe6f6b787"),
+                            SkillLevelId = new Guid("e1638ce4-e1d8-4ed8-96a4-949ea26fbf1f"),
                             StartQuestionNumber = 25
                         },
                         new
                         {
-                            Id = new Guid("78b16532-6721-421b-be68-5f811e6f33f0"),
+                            Id = new Guid("5fcdbf81-4584-4e74-8d40-7307b6fda633"),
                             EndQuestionNumber = 33,
                             IsDeleted = false,
                             Name = "Nghe bài giảng/thuyết trình ngắn rồi chọn đáp án phù hợp với nội dung hoặc thái độ người nói.",
-                            SkillLevelId = new Guid("5bda5fed-c4d5-4707-879d-b6abe6f6b787"),
+                            SkillLevelId = new Guid("e1638ce4-e1d8-4ed8-96a4-949ea26fbf1f"),
                             StartQuestionNumber = 29
                         },
                         new
                         {
-                            Id = new Guid("0f434d8f-8fef-427d-aa9c-b4130077d8ac"),
+                            Id = new Guid("b4eaf804-0552-4de7-b296-fa080f95da03"),
                             EndQuestionNumber = 37,
                             IsDeleted = false,
                             Name = "Nghe cuộc thảo luận/ý kiến trái chiều rồi chọn nội dung chính hoặc quan điểm nhân vật.",
-                            SkillLevelId = new Guid("5bda5fed-c4d5-4707-879d-b6abe6f6b787"),
+                            SkillLevelId = new Guid("e1638ce4-e1d8-4ed8-96a4-949ea26fbf1f"),
                             StartQuestionNumber = 34
                         },
                         new
                         {
-                            Id = new Guid("90514cf2-aa9a-4bb9-b759-7258fb4e9eb2"),
+                            Id = new Guid("252e0c20-70bd-4d60-8cf8-5cf5c810abac"),
                             EndQuestionNumber = 31,
                             IsDeleted = false,
                             Name = "Điền từ/cụm từ vào chỗ trống trong đoạn văn.",
-                            SkillLevelId = new Guid("aca5da63-e3b8-4d4f-a337-982e7585ef95"),
+                            SkillLevelId = new Guid("a920d435-bcdf-4543-b206-e65c597ad2b6"),
                             StartQuestionNumber = 28
                         },
                         new
                         {
-                            Id = new Guid("d1754294-90ea-42d0-86c2-5d6e07a1b04f"),
+                            Id = new Guid("cd6a1252-60a5-440a-aa41-b10cf70ecf26"),
                             EndQuestionNumber = 38,
                             IsDeleted = false,
                             Name = "Chọn đáp án phù hợp với nội dung đoạn văn.",
-                            SkillLevelId = new Guid("aca5da63-e3b8-4d4f-a337-982e7585ef95"),
+                            SkillLevelId = new Guid("a920d435-bcdf-4543-b206-e65c597ad2b6"),
                             StartQuestionNumber = 32
                         },
                         new
                         {
-                            Id = new Guid("b47f4a10-b0e1-4e21-a403-0dcafcc6eec2"),
+                            Id = new Guid("c3a4c36d-cb82-43ac-8c47-ea098508bbf7"),
                             EndQuestionNumber = 40,
                             IsDeleted = false,
                             Name = "Nghe bài giảng/hội thoại dài rồi chọn đáp án phù hợp với ý chính hoặc lập luận.",
-                            SkillLevelId = new Guid("83128ff4-d33d-40d6-87ee-b0013eb2521a"),
+                            SkillLevelId = new Guid("f60f8658-fe49-4055-9c7e-1d22aeb66aca"),
                             StartQuestionNumber = 38
                         },
                         new
                         {
-                            Id = new Guid("118d0b47-3831-45e9-9ffa-1feaa8cfa678"),
+                            Id = new Guid("8d9d23a7-98e2-4b3f-a8cf-ae4a6cb45925"),
                             EndQuestionNumber = 43,
                             IsDeleted = false,
                             Name = "Nghe thảo luận/phát biểu rồi chọn đáp án phù hợp với nội dung gạch chân.",
-                            SkillLevelId = new Guid("83128ff4-d33d-40d6-87ee-b0013eb2521a"),
+                            SkillLevelId = new Guid("f60f8658-fe49-4055-9c7e-1d22aeb66aca"),
                             StartQuestionNumber = 41
                         },
                         new
                         {
-                            Id = new Guid("4fcdbda9-66eb-4dfa-ac25-f3c9477afb43"),
+                            Id = new Guid("f661d290-c244-4a28-851e-5d6f9c7c5b0b"),
                             EndQuestionNumber = 50,
                             IsDeleted = false,
                             Name = "Nghe đoạn văn bản dài (tin tức, bài giảng, phỏng vấn) rồi chọn đáp án đúng với chủ đề, mục đích, thái độ, hoặc chi tiết quan trọng..",
-                            SkillLevelId = new Guid("83128ff4-d33d-40d6-87ee-b0013eb2521a"),
+                            SkillLevelId = new Guid("f60f8658-fe49-4055-9c7e-1d22aeb66aca"),
                             StartQuestionNumber = 44
                         },
                         new
                         {
-                            Id = new Guid("79e07d80-703d-48b6-8327-e7396bc2e410"),
+                            Id = new Guid("639a0abc-6094-41a3-87ab-96eac5cb62fa"),
                             EndQuestionNumber = 43,
                             IsDeleted = false,
                             Name = "Chọn đáp án phù hợp với nội dung gạch chân trong đoạn văn.",
-                            SkillLevelId = new Guid("6d63b5d7-8fc3-45be-a9f1-6af0f651b5e3"),
+                            SkillLevelId = new Guid("d767ccbc-c491-42fe-9273-12dc4dfc2aa8"),
                             StartQuestionNumber = 39
                         },
                         new
                         {
-                            Id = new Guid("40996dd9-4290-432e-aee7-251e20bcb1bc"),
+                            Id = new Guid("c8c1cb3f-73e8-4504-8944-239cb081a3a4"),
                             EndQuestionNumber = 45,
                             IsDeleted = false,
                             Name = "Chọn đáp án phù hợp với chủ đề của đoạn văn.",
-                            SkillLevelId = new Guid("6d63b5d7-8fc3-45be-a9f1-6af0f651b5e3"),
+                            SkillLevelId = new Guid("d767ccbc-c491-42fe-9273-12dc4dfc2aa8"),
                             StartQuestionNumber = 44
                         },
                         new
                         {
-                            Id = new Guid("094a3b15-91fc-43af-9fac-b84f07043a34"),
+                            Id = new Guid("05224c3f-b985-4930-b085-dad20be3fbd2"),
                             EndQuestionNumber = 50,
                             IsDeleted = false,
                             Name = "Điền từ/cụm từ vào chỗ trống hoặc chọn đáp án chính xác với mục đích của đoạn văn.",
-                            SkillLevelId = new Guid("6d63b5d7-8fc3-45be-a9f1-6af0f651b5e3"),
+                            SkillLevelId = new Guid("d767ccbc-c491-42fe-9273-12dc4dfc2aa8"),
                             StartQuestionNumber = 46
                         });
                 });
@@ -712,19 +712,19 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ba618367-1681-49ae-9d3a-be194de54403"),
+                            Id = new Guid("d657d124-b149-43e3-a84a-7b05dd037ffc"),
                             IsDeleted = false,
                             SkillName = "Nghe"
                         },
                         new
                         {
-                            Id = new Guid("56e413be-c614-41b9-934b-c8b60fb24cfc"),
+                            Id = new Guid("38c7dca6-f7a5-4f6f-9649-f7da4a1cbb46"),
                             IsDeleted = false,
                             SkillName = "Đọc"
                         },
                         new
                         {
-                            Id = new Guid("1bb8514e-a1a6-4c41-b176-f20124f4044e"),
+                            Id = new Guid("89e0201a-2d41-4a84-8468-7f9d33693679"),
                             IsDeleted = false,
                             SkillName = "Viết"
                         });
@@ -770,115 +770,115 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e8d1e161-73a9-46c0-abc3-1552188a0ead"),
+                            Id = new Guid("7deb2d52-b4d8-4f0e-ae98-a044a1dcc3e0"),
                             IsDeleted = false,
-                            LevelId = new Guid("e7b61c72-a094-4f81-806e-1a75a878557d"),
-                            SkillId = new Guid("ba618367-1681-49ae-9d3a-be194de54403")
+                            LevelId = new Guid("0ae30081-a113-4652-af54-195763ce7045"),
+                            SkillId = new Guid("d657d124-b149-43e3-a84a-7b05dd037ffc")
                         },
                         new
                         {
-                            Id = new Guid("203ee981-d694-40e4-8a30-b7c1a1e6ec09"),
+                            Id = new Guid("a39bb6dc-07f2-44ea-bb10-9b69ae48dfed"),
                             IsDeleted = false,
-                            LevelId = new Guid("fcffbd73-5454-4af6-942d-645d120edac6"),
-                            SkillId = new Guid("ba618367-1681-49ae-9d3a-be194de54403")
+                            LevelId = new Guid("e519693e-4a45-424a-a023-ed78e8ddd734"),
+                            SkillId = new Guid("d657d124-b149-43e3-a84a-7b05dd037ffc")
                         },
                         new
                         {
-                            Id = new Guid("bcb3d3cd-a148-4562-8b67-ee37c0263bc6"),
+                            Id = new Guid("d82536ef-234d-46bf-abba-5d2c91d5548d"),
                             IsDeleted = false,
-                            LevelId = new Guid("3d463174-b4f8-4604-9056-e3638571bc40"),
-                            SkillId = new Guid("ba618367-1681-49ae-9d3a-be194de54403")
+                            LevelId = new Guid("621f0da6-d50a-40b7-9be0-ba44df11b00f"),
+                            SkillId = new Guid("d657d124-b149-43e3-a84a-7b05dd037ffc")
                         },
                         new
                         {
-                            Id = new Guid("8aa5e695-9c2f-4f2b-a71d-482618517617"),
+                            Id = new Guid("494e3aa3-f49f-4202-bf7d-3b9ce975db18"),
                             IsDeleted = false,
-                            LevelId = new Guid("58b35613-caf6-42f3-ace9-195f39f2ca86"),
-                            SkillId = new Guid("ba618367-1681-49ae-9d3a-be194de54403")
+                            LevelId = new Guid("f0860c43-68d7-4ef2-87ff-b4a5dfb50162"),
+                            SkillId = new Guid("d657d124-b149-43e3-a84a-7b05dd037ffc")
                         },
                         new
                         {
-                            Id = new Guid("5bda5fed-c4d5-4707-879d-b6abe6f6b787"),
+                            Id = new Guid("e1638ce4-e1d8-4ed8-96a4-949ea26fbf1f"),
                             IsDeleted = false,
-                            LevelId = new Guid("7dc94003-4c5e-44d9-bc58-cf935d8f5fbc"),
-                            SkillId = new Guid("ba618367-1681-49ae-9d3a-be194de54403")
+                            LevelId = new Guid("87b10d91-5170-45f6-b6ed-639db7bacafc"),
+                            SkillId = new Guid("d657d124-b149-43e3-a84a-7b05dd037ffc")
                         },
                         new
                         {
-                            Id = new Guid("83128ff4-d33d-40d6-87ee-b0013eb2521a"),
+                            Id = new Guid("f60f8658-fe49-4055-9c7e-1d22aeb66aca"),
                             IsDeleted = false,
-                            LevelId = new Guid("40945347-4a3d-4938-9ba5-76901120f951"),
-                            SkillId = new Guid("ba618367-1681-49ae-9d3a-be194de54403")
+                            LevelId = new Guid("346a2201-2a1f-41c8-a705-bd49ef2f5fa8"),
+                            SkillId = new Guid("d657d124-b149-43e3-a84a-7b05dd037ffc")
                         },
                         new
                         {
-                            Id = new Guid("c5afb485-fb72-4f70-842d-5f785281b516"),
+                            Id = new Guid("33c0fe80-ceb8-4e96-8c5d-eaf68abba27e"),
                             IsDeleted = false,
-                            LevelId = new Guid("e7b61c72-a094-4f81-806e-1a75a878557d"),
-                            SkillId = new Guid("56e413be-c614-41b9-934b-c8b60fb24cfc")
+                            LevelId = new Guid("0ae30081-a113-4652-af54-195763ce7045"),
+                            SkillId = new Guid("38c7dca6-f7a5-4f6f-9649-f7da4a1cbb46")
                         },
                         new
                         {
-                            Id = new Guid("038dc84d-84bf-4017-8b51-49041d7c69f1"),
+                            Id = new Guid("b84fce53-5cb4-4739-9644-b4470c77c4ed"),
                             IsDeleted = false,
-                            LevelId = new Guid("fcffbd73-5454-4af6-942d-645d120edac6"),
-                            SkillId = new Guid("56e413be-c614-41b9-934b-c8b60fb24cfc")
+                            LevelId = new Guid("e519693e-4a45-424a-a023-ed78e8ddd734"),
+                            SkillId = new Guid("38c7dca6-f7a5-4f6f-9649-f7da4a1cbb46")
                         },
                         new
                         {
-                            Id = new Guid("1127b458-58e3-482c-8c9a-7cb897482375"),
+                            Id = new Guid("1484e946-1ace-4a2b-bafc-b23e6acb0c83"),
                             IsDeleted = false,
-                            LevelId = new Guid("3d463174-b4f8-4604-9056-e3638571bc40"),
-                            SkillId = new Guid("56e413be-c614-41b9-934b-c8b60fb24cfc")
+                            LevelId = new Guid("621f0da6-d50a-40b7-9be0-ba44df11b00f"),
+                            SkillId = new Guid("38c7dca6-f7a5-4f6f-9649-f7da4a1cbb46")
                         },
                         new
                         {
-                            Id = new Guid("b163baf3-c72b-4763-b23b-001f7747e36c"),
+                            Id = new Guid("2af49ff8-3dcb-4b98-8401-de7eca0cd335"),
                             IsDeleted = false,
-                            LevelId = new Guid("58b35613-caf6-42f3-ace9-195f39f2ca86"),
-                            SkillId = new Guid("56e413be-c614-41b9-934b-c8b60fb24cfc")
+                            LevelId = new Guid("f0860c43-68d7-4ef2-87ff-b4a5dfb50162"),
+                            SkillId = new Guid("38c7dca6-f7a5-4f6f-9649-f7da4a1cbb46")
                         },
                         new
                         {
-                            Id = new Guid("aca5da63-e3b8-4d4f-a337-982e7585ef95"),
+                            Id = new Guid("a920d435-bcdf-4543-b206-e65c597ad2b6"),
                             IsDeleted = false,
-                            LevelId = new Guid("7dc94003-4c5e-44d9-bc58-cf935d8f5fbc"),
-                            SkillId = new Guid("56e413be-c614-41b9-934b-c8b60fb24cfc")
+                            LevelId = new Guid("87b10d91-5170-45f6-b6ed-639db7bacafc"),
+                            SkillId = new Guid("38c7dca6-f7a5-4f6f-9649-f7da4a1cbb46")
                         },
                         new
                         {
-                            Id = new Guid("6d63b5d7-8fc3-45be-a9f1-6af0f651b5e3"),
+                            Id = new Guid("d767ccbc-c491-42fe-9273-12dc4dfc2aa8"),
                             IsDeleted = false,
-                            LevelId = new Guid("40945347-4a3d-4938-9ba5-76901120f951"),
-                            SkillId = new Guid("56e413be-c614-41b9-934b-c8b60fb24cfc")
+                            LevelId = new Guid("346a2201-2a1f-41c8-a705-bd49ef2f5fa8"),
+                            SkillId = new Guid("38c7dca6-f7a5-4f6f-9649-f7da4a1cbb46")
                         },
                         new
                         {
-                            Id = new Guid("32dba996-050b-48bc-832a-efbef20c5df4"),
+                            Id = new Guid("cb1297b6-f55a-4eec-99f4-3426014b3539"),
                             IsDeleted = false,
-                            LevelId = new Guid("3d463174-b4f8-4604-9056-e3638571bc40"),
-                            SkillId = new Guid("1bb8514e-a1a6-4c41-b176-f20124f4044e")
+                            LevelId = new Guid("621f0da6-d50a-40b7-9be0-ba44df11b00f"),
+                            SkillId = new Guid("89e0201a-2d41-4a84-8468-7f9d33693679")
                         },
                         new
                         {
-                            Id = new Guid("05fd8057-f016-481d-9edb-52cdee594d01"),
+                            Id = new Guid("88833a7b-5af3-4513-a9fd-1647c67ff40c"),
                             IsDeleted = false,
-                            LevelId = new Guid("58b35613-caf6-42f3-ace9-195f39f2ca86"),
-                            SkillId = new Guid("1bb8514e-a1a6-4c41-b176-f20124f4044e")
+                            LevelId = new Guid("f0860c43-68d7-4ef2-87ff-b4a5dfb50162"),
+                            SkillId = new Guid("89e0201a-2d41-4a84-8468-7f9d33693679")
                         },
                         new
                         {
-                            Id = new Guid("2dbcff6d-8ebd-404d-b89c-d88b71733925"),
+                            Id = new Guid("1297d427-1dc2-40ff-bc2c-0a47048aba12"),
                             IsDeleted = false,
-                            LevelId = new Guid("7dc94003-4c5e-44d9-bc58-cf935d8f5fbc"),
-                            SkillId = new Guid("1bb8514e-a1a6-4c41-b176-f20124f4044e")
+                            LevelId = new Guid("87b10d91-5170-45f6-b6ed-639db7bacafc"),
+                            SkillId = new Guid("89e0201a-2d41-4a84-8468-7f9d33693679")
                         },
                         new
                         {
-                            Id = new Guid("04484630-4111-4afb-aab2-73e703ace410"),
+                            Id = new Guid("84f41ed6-c4a3-4962-bb01-35f344aff293"),
                             IsDeleted = false,
-                            LevelId = new Guid("40945347-4a3d-4938-9ba5-76901120f951"),
-                            SkillId = new Guid("1bb8514e-a1a6-4c41-b176-f20124f4044e")
+                            LevelId = new Guid("346a2201-2a1f-41c8-a705-bd49ef2f5fa8"),
+                            SkillId = new Guid("89e0201a-2d41-4a84-8468-7f9d33693679")
                         });
                 });
 
