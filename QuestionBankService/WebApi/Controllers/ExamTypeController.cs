@@ -26,7 +26,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _examTypeService.GellAllExamTypeAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -53,7 +53,14 @@ namespace WebApi.Controllers
             {
                 if (examTypeAddDto == null)
                 { return BadRequest("Invalid data"); }
-                await _examTypeService.AddExamTypeAsync(examTypeAddDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                await _examTypeService.AddExamTypeAsync(examTypeAddDto, userId);
                 return Ok("Add successfully");
             }
             catch (ArgumentException ex)
@@ -104,7 +111,13 @@ namespace WebApi.Controllers
         {
             try
             {
-                var result = await _examTypeService.UpdateExamTypeAsync(id, examTypeUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _examTypeService.UpdateExamTypeAsync(id, examTypeUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();

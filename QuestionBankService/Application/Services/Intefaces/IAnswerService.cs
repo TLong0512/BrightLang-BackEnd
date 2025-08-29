@@ -11,8 +11,8 @@ namespace Application.Services.Intefaces
     {
         public Task<IEnumerable<AnswerViewDto>> GellAllAnswerAsync();
         public Task<AnswerViewDto> GetAnswerByIdAsync(Guid id);
-        public Task<bool> AddAnswerAsync(AnswerAddDto AnswerAddDto);
-        public Task<AnswerViewDto> UpdateAnswerAsync(Guid id, AnswerUpdateDto AnswerUpdateDto);
+        public Task<bool> AddAnswerAsync(AnswerAddDto AnswerAddDto, Guid userId);
+        public Task<AnswerViewDto> UpdateAnswerAsync(Guid id, AnswerUpdateDto AnswerUpdateDto, Guid userId);
         public Task<bool> DeleteAnswerAsync(Guid id);
         public Task<IEnumerable<AnswerViewDto>> GetAnswerByQuestionIdAsync(Guid questionId);
     }

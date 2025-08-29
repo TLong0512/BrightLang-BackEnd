@@ -10,6 +10,6 @@ namespace Infrastructure.Repositories.Interfaces
     public interface ILevelRepository : IGenericRepository<Level>
     {
         public Task<IEnumerable<Level>> GetAllLevelsAsync();
-        public Task<Level> GetLevelById(Guid id);
+        public Task<Level> GetLevelByIdAsync(Guid id);
     }
 }

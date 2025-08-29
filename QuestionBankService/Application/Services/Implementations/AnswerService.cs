@@ -22,7 +22,7 @@ namespace Application.Services
             this._mapper = mapper;
         }
 
-        public async Task<bool> AddAnswerAsync(AnswerAddDto answerAddDto)
+        public async Task<bool> AddAnswerAsync(AnswerAddDto answerAddDto, Guid userId)
         {
 
             var existingQuestion = await _unitOfWork.QuestionRepository.GetByIdAsync(answerAddDto.QuestionId);
@@ -33,7 +33,7 @@ namespace Application.Services
             else
             {
                 var newAnswer = _mapper.Map<Answer>(answerAddDto);
-                await _unitOfWork.AnswerRepository.AddAsync(newAnswer, new Guid());
+                await _unitOfWork.AnswerRepository.AddAsync(newAnswer, userId);
                 await _unitOfWork.SaveChangesAsync();
                 return true;
             }
@@ -82,7 +82,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<AnswerViewDto> UpdateAnswerAsync(Guid id, AnswerUpdateDto answerUpdateDto)
+        public async Task<AnswerViewDto> UpdateAnswerAsync(Guid id, AnswerUpdateDto answerUpdateDto, Guid userId)
         {
             var answer = await _unitOfWork.AnswerRepository.GetAnswerById(id);
             if (answer == null)
@@ -104,7 +104,7 @@ namespace Application.Services
                     answer.Value = updatedAnswer.Value;
                     answer.IsCorrect = updatedAnswer.IsCorrect;
                     answer.Explain = updatedAnswer.Explain;
-                    await _unitOfWork.AnswerRepository.Update(answer, new Guid());
+                    await _unitOfWork.AnswerRepository.Update(answer, userId);
                     await _unitOfWork.SaveChangesAsync();
                     return _mapper.Map<AnswerViewDto>(answer);
                 }

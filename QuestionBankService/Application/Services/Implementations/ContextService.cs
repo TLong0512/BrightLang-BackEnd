@@ -22,7 +22,7 @@ namespace Application.Services.Implementations
             this._mapper = mapper;
         }
 
-        public async Task<Guid> AddContextAsync(ContextAddDto contextAddDto)
+        public async Task<Guid> AddContextAsync(ContextAddDto contextAddDto, Guid userId)
         {
 
             var existingRange = await _unitOfWork.RangeRepository.GetByIdAsync(contextAddDto.RangeId);
@@ -33,7 +33,7 @@ namespace Application.Services.Implementations
             else
             {
                 var newContext = _mapper.Map<Context>(contextAddDto);
-                await _unitOfWork.ContextRepository.AddAsync(newContext, new Guid());
+                await _unitOfWork.ContextRepository.AddAsync(newContext, userId);
                 await _unitOfWork.SaveChangesAsync();
                 return newContext.Id;
             }
@@ -68,7 +68,7 @@ namespace Application.Services.Implementations
             return _mapper.Map<ContextViewDto>(result);
         }
 
-        public async Task<ContextViewDto> UpdateContextAsync(Guid id, ContextUpdateDto contextUpdateDto)
+        public async Task<ContextViewDto> UpdateContextAsync(Guid id, ContextUpdateDto contextUpdateDto, Guid userId)
         {
             var context = await _unitOfWork.ContextRepository.GetContextById(id);
             if (context == null)
@@ -90,7 +90,7 @@ namespace Application.Services.Implementations
                     context.Content = updatedContext.Content;
                     context.Explain = updatedContext.Explain;
                     context.IsBelongTest = updatedContext.IsBelongTest;
-                    await _unitOfWork.ContextRepository.Update(context, new Guid());
+                    await _unitOfWork.ContextRepository.Update(context, userId);
                     await _unitOfWork.SaveChangesAsync();
                     return _mapper.Map<ContextViewDto>(context);
                 }

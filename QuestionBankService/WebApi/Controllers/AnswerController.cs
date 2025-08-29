@@ -27,7 +27,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _answerService.GellAllAnswerAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -83,7 +83,14 @@ namespace WebApi.Controllers
             {
                 if (AnswerAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _answerService.AddAnswerAsync(AnswerAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _answerService.AddAnswerAsync(AnswerAddDto, userId);
                 if (result == false)
                 {
                     return BadRequest();
@@ -139,7 +146,13 @@ namespace WebApi.Controllers
         {
             try
             {
-                var result = await _answerService.UpdateAnswerAsync(id, AnswerUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _answerService.UpdateAnswerAsync(id, AnswerUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();

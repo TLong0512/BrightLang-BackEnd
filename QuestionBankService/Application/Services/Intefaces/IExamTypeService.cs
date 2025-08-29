@@ -11,8 +11,8 @@ namespace Application.Services.Intefaces
     {
         public Task<IEnumerable<ExamTypeViewDto>> GellAllExamTypeAsync();
         public Task<ExamTypeViewDto> GetExamTypeByIdAsync(Guid id);
-        public Task AddExamTypeAsync(ExamTypeAddDto examTypeAddDto);
-        public Task<ExamTypeViewDto> UpdateExamTypeAsync(Guid id, ExamTypeUpdateDto examTypeUpdateDto);
+        public Task AddExamTypeAsync(ExamTypeAddDto examTypeAddDto, Guid userId);
+        public Task<ExamTypeViewDto> UpdateExamTypeAsync(Guid id, ExamTypeUpdateDto examTypeUpdateDto, Guid userId);
         public Task<bool> DeleteExamTypeAsync(Guid id);
     }
 }

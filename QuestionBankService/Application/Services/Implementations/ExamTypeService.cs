@@ -22,10 +22,10 @@ namespace Application.Services.Implementations
             this._mapper = mapper;
         }
 
-        public async Task AddExamTypeAsync(ExamTypeAddDto examTypeAddDto)
+        public async Task AddExamTypeAsync(ExamTypeAddDto examTypeAddDto, Guid userId   )
         {
             var newExamType = _mapper.Map<ExamType>(examTypeAddDto);
-            await _unitOfWork.ExamTypeRepository.AddAsync(newExamType, new Guid());
+            await _unitOfWork.ExamTypeRepository.AddAsync(newExamType,userId);
             await _unitOfWork.SaveChangesAsync();
         }
 
@@ -58,7 +58,7 @@ namespace Application.Services.Implementations
             return _mapper.Map<ExamTypeViewDto>(result);
         }
 
-        public async Task<ExamTypeViewDto> UpdateExamTypeAsync(Guid id, ExamTypeUpdateDto examTypeUpdateDto)
+        public async Task<ExamTypeViewDto> UpdateExamTypeAsync(Guid id, ExamTypeUpdateDto examTypeUpdateDto, Guid userId)
         {
             var examType = await _unitOfWork.ExamTypeRepository.GetByIdAsync(id);
 
@@ -71,7 +71,7 @@ namespace Application.Services.Implementations
                 var updaedExamType = _mapper.Map<ExamType>(examTypeUpdateDto);
                 examType.Name = updaedExamType.Name;
                 examType.Description = updaedExamType.Description;
-                await _unitOfWork.ExamTypeRepository.Update(examType, new Guid());
+                await _unitOfWork.ExamTypeRepository.Update(examType, userId );
                 await _unitOfWork.SaveChangesAsync();
                 return _mapper.Map<ExamTypeViewDto>(examType);
             }

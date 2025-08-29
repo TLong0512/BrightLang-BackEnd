@@ -11,8 +11,8 @@ namespace Application.Services.Intefaces
     {
         public Task<IEnumerable<LevelViewDto>> GellAllLevelAsync();
         public Task<LevelViewDto> GetLevelByIdAsync(Guid id);
-        public Task<bool> AddLevelAsync(LevelAddDto LevelAddDto);
-        public Task<LevelViewDto> UpdateLevelAsync(Guid id, LevelUpdateDto LevelUpdateDto);
+        public Task<bool> AddLevelAsync(LevelAddDto LevelAddDto, Guid userId);
+        public Task<LevelViewDto> UpdateLevelAsync(Guid id, LevelUpdateDto LevelUpdateDto, Guid userId);
         public Task<bool> DeleteLevelAsync(Guid id);
     }
 }
