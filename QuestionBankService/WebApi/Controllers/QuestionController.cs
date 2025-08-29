@@ -383,6 +383,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("get-by-list/summary")]
+        [Authorize]
         public async Task<IActionResult> GetListSummaryQuestions([FromBody]List<Guid> listQuestionIds)
         {
             try
@@ -413,6 +414,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("get-by-list/detail")]
+        [Authorize]
         public async Task<IActionResult> GetListDetailQuestions([FromBody]List<Guid> listQuestionIds)
         {
             try

@@ -29,7 +29,7 @@ namespace Application.Services.Implementations
         }
 
 
-        public async Task<Guid> CreateTestAsync(Guid userId, List<Guid> questionIds)
+        public async Task<Guid> CreateTestAsync(Guid userId, IEnumerable<Guid> questionIds)
         {
             var testAddDto = new TestAddDto {UserId = userId };
             var test = _mapper.Map<Test>(testAddDto);
@@ -59,7 +59,7 @@ namespace Application.Services.Implementations
                                        .Take(pageSize)
                                        .ToListAsync();
 
-            var listTestSummaryDtos =  _mapper.Map<List<TestSummaryDto>>(listTests);
+            var listTestSummaryDtos =  _mapper.Map<IEnumerable<TestSummaryDto>>(listTests);
 
             return new PageResult<TestSummaryDto>
             {
@@ -69,20 +69,18 @@ namespace Application.Services.Implementations
                 Items = listTestSummaryDtos
             };
         }
-
-
-
-        public Task<TestReviewDto> GetTestDetailAsync(List<QuestionDetailDto> questionDetailDtos, IEnumerable<Guid> chooseAnswerIds)
+        public Task<TestReviewDto> GetTestDetailAsync(Guid testId, IEnumerable<QuestionDetailDto> questionDetailDtos, IEnumerable<Guid> chooseAnswerIds)
         {
             var result = new TestReviewDto
             {
+                TestId = testId,
                 QuestionDetails = questionDetailDtos,
                 ChoseAnswerIds = chooseAnswerIds
             };
             return Task.FromResult(result);
         }
 
-        public async Task SubmitAnswerInATest(Guid userId, Guid testId, List<Guid> listAnswerIds, List<Guid> listTrueAnswerIds)
+        public async Task SubmitAnswerInATest(Guid userId, Guid testId, IEnumerable<Guid> listAnswerIds, IEnumerable<Guid> listTrueAnswerIds)
         {
             foreach(var answerId in listAnswerIds)
             {
