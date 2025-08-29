@@ -26,7 +26,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _levelService.GellAllLevelAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -53,7 +53,14 @@ namespace WebApi.Controllers
             {
                 if (LevelAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _levelService.AddLevelAsync(LevelAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _levelService.AddLevelAsync(LevelAddDto, userId);
                 if(result == false)
                 {
                     return BadRequest();
@@ -108,7 +115,12 @@ namespace WebApi.Controllers
         {
             try
             {
-                var result = await _levelService.UpdateLevelAsync(id, LevelUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+                var result = await _levelService.UpdateLevelAsync(id, LevelUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();

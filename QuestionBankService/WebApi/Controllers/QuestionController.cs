@@ -6,6 +6,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace WebApi.Controllers
 {
@@ -23,12 +24,12 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GettAllQuestion()
+        public async Task<IActionResult> GetAllQuestion()
         {
             try
             {
                 var result = await _questionService.GellAllQuestionAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -47,14 +48,44 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("generate-question/{rangeId}")]
-        [Authorize]
-        public async Task<IActionResult> GenerateQuestionInARange(Guid rangeId)
+        [HttpGet("generate/range/{rangeId}")]
+        //[Authorize]
+        public async Task<IActionResult> GenerateQuestionByRangeId(Guid rangeId)
         {
             try
             {
-                var result = await _questionService.GenerateRandomQuestionInARangeByRangeId(rangeId);
-                if (result == null || !result.Any())
+                if (rangeId == Guid.Empty)
+                {
+                    return BadRequest();
+                }
+                var result = await _questionService.GenerateQuestionByRangeIdAsync(rangeId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("generate/skill-level/{skillLevelId}/{number?}")]
+        //[Authorize]
+        public async Task<IActionResult> GenerateQuestionBySkillLevelId(Guid skillLevelId, int number = 2)
+        {
+            try
+            {
+                if (skillLevelId == Guid.Empty)
+                {
+                    return BadRequest();
+                }
+                var result = await _questionService.GenerateQuestionBySkillLevelIdAsync(skillLevelId);
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -73,7 +104,93 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("question-in-context/{contextId}")]
+        [HttpGet("generate/level/{levelId}/{numberPerSkillLevel?}")]
+        //[Authorize]
+        public async Task<IActionResult> GenerateQuestionByLevelId(Guid levelId, int numberPerSkillLevel = 2)
+        {
+            try
+            {
+                if(levelId == Guid.Empty)
+                {
+                    return BadRequest();
+                }    
+                var result = await _questionService.GenerateQuestionByLevelIdAsync(levelId, numberPerSkillLevel);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("generate/examType/{examTypeId}/{numberPerSkillLevel?}")]
+        //[Authorize]
+        public async Task<IActionResult> GenerateQuestionByExamTypeId(Guid examTypeId, int numberPerSkillLevel = 2)
+        {
+            try
+            {
+                if (examTypeId == Guid.Empty)
+                {
+                    return BadRequest();
+                }
+                var result = await _questionService.GenerateQuestionByExamTypeIdAsync(examTypeId, numberPerSkillLevel);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("generate/all/{numberPerSkillLevel?}")]
+        public async Task<IActionResult> GenerateAllQuestions(int numberPerSkillLevel = 2)
+        {
+            try
+            {
+                var result = await _questionService.GenerateAllExamTypeQuestionAsync(numberPerSkillLevel);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("filter/context/{contextId}")]
+        [Authorize]
         public async Task<IActionResult> GetQuestionByContextId(Guid contextId)
         {
             try
@@ -110,7 +227,14 @@ namespace WebApi.Controllers
             {
                 if (QuestionAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _questionService.AddQuestionAsync(QuestionAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _questionService.AddQuestionAsync(QuestionAddDto, userId);
                 if (result == Guid.Empty)
                 {
                     return BadRequest();
@@ -130,15 +254,22 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpPost("quick-add/{skilllevelId}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> QuickAddQuestion(Guid skilllevelId,[FromBody] List<QuickQuestionAddDto> quickQuestionAddDto)
+        [HttpPost("quick-add/skill/{skillId}/exam-type/{examTypeId}")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> QuickAddQuestion(Guid skillId, Guid examTypeId,  [FromBody] List<QuickQuestionAddDto> quickQuestionAddDto)
         {
             try
             {
                 if (quickQuestionAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _questionService.QuickAddQuestion(skilllevelId, quickQuestionAddDto);
+
+                //var userIdClaim = User.FindFirst("nameid")?.Value;
+                //if (string.IsNullOrEmpty(userIdClaim))
+                //    return Unauthorized("UserId not found in token");
+
+                //Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _questionService.QuickAddQuestion(skillId, examTypeId,quickQuestionAddDto, new Guid());
                 if (result == false)
                 {
                     return BadRequest();
@@ -168,7 +299,7 @@ namespace WebApi.Controllers
                 {
                     return BadRequest();
                 }
-                var result = await _questionService.GetQuestionByIdAsync(id);
+                var result = await _questionService.GetQuestionDetailByIdAsync(id);
                 if (result == null)
                 {
                     return NotFound("No result found");
@@ -194,7 +325,12 @@ namespace WebApi.Controllers
         {
             try
             {
-                var result = await _questionService.UpdateQuestionAsync(id, QuestionUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+                var result = await _questionService.UpdateQuestionAsync(id, QuestionUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();
@@ -231,6 +367,66 @@ namespace WebApi.Controllers
                 }
 
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("get-by-list/summary")]
+        public async Task<IActionResult> GetListSummaryQuestions([FromBody]List<Guid> listQuestionIds)
+        {
+            try
+            {
+                if (!listQuestionIds.Any())
+                {
+                    return BadRequest();
+                }
+                var result = await _questionService.GetAllQuestionSummaryByListIdAsync(listQuestionIds);
+                if (result == null)
+                {
+                    return NotFound("No result found");
+                }
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("get-by-list/detail")]
+        public async Task<IActionResult> GetListDetailQuestions([FromBody]List<Guid> listQuestionIds)
+        {
+            try
+            {
+                if (!listQuestionIds.Any())
+                {
+                    return BadRequest();
+                }
+                var result = await _questionService.GetAllQuestionDetailByListIdAsync(listQuestionIds);
+                if (result == null)
+                {
+                    return NotFound("No result found");
+                }
+                return Ok(result);
             }
             catch (ArgumentException ex)
             {

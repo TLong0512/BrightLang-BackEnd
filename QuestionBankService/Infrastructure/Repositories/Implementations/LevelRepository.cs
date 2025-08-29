@@ -21,9 +21,9 @@ namespace Infrastructure.Repositories.Implementations
             return await _context.Levels.Include(x => x.ExamType).ToListAsync();
         }
 
-        public async Task<Level> GetLevelById(Guid id)
+        public async Task<Level> GetLevelByIdAsync(Guid id)
         {
-            return await _context.Levels.Include(x => x.ExamType).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Levels.Include(x => x.ExamType).Include(x => x.SkillLevels).FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

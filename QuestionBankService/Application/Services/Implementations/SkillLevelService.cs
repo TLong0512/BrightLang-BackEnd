@@ -22,7 +22,7 @@ namespace Application.Services.Implementations
             this._mapper = mapper;
         }
 
-        public async Task<bool> AddSkillLevelAsync(SkillLevelAddDto skillLevelAddDto)
+        public async Task<bool> AddSkillLevelAsync(SkillLevelAddDto skillLevelAddDto, Guid userId)
         {
 
             var existingLevel = await _unitOfWork.LevelRepository.GetByIdAsync(skillLevelAddDto.LevelId);
@@ -35,7 +35,7 @@ namespace Application.Services.Implementations
             else
             {
                 var newSkillLevel = _mapper.Map<SkillLevel>(skillLevelAddDto);
-                await _unitOfWork.SkillLevelRepository.AddAsync(newSkillLevel, new Guid());
+                await _unitOfWork.SkillLevelRepository.AddAsync(newSkillLevel, userId);
                 await _unitOfWork.SaveChangesAsync();
                 return true;
             }
@@ -65,13 +65,20 @@ namespace Application.Services.Implementations
             return orderListResultDto;
         }
 
+        public async Task<IEnumerable<SkillLevelViewDto>> FilterByLevelIdAsync(Guid LevelId)
+        {
+            var result = await _unitOfWork.SkillLevelRepository.GetSkillLevelByCondition(x => x.LevelId == LevelId);
+            var listResultDto = _mapper.Map<IEnumerable<SkillLevelViewDto>>(result);
+            return listResultDto;
+        }
+
         public async Task<SkillLevelViewDto> GetSkillLevelByIdAsync(Guid id)
         {
             var result = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(id);
             return _mapper.Map<SkillLevelViewDto>(result);
         }
 
-        public async Task<SkillLevelViewDto> UpdateSkillLevelAsync(Guid id, SkillLevelUpdateDto skillLevelUpdateDto)
+        public async Task<SkillLevelViewDto> UpdateSkillLevelAsync(Guid id, SkillLevelUpdateDto skillLevelUpdateDto, Guid userId)
         {
             var skillLevel = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(id);
             if (skillLevel == null)
@@ -92,7 +99,7 @@ namespace Application.Services.Implementations
                     var updatedSkillLevel = _mapper.Map<SkillLevel>(skillLevelUpdateDto);
                     skillLevel.SkillId = updatedSkillLevel.SkillId;
                     skillLevel.LevelId = updatedSkillLevel.LevelId;
-                    await _unitOfWork.SkillLevelRepository.Update(skillLevel, new Guid());
+                    await _unitOfWork.SkillLevelRepository.Update(skillLevel,userId);
                     await _unitOfWork.SaveChangesAsync();
                     return _mapper.Map<SkillLevelViewDto>(skillLevel);
                 }

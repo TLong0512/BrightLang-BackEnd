@@ -21,13 +21,13 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GettAllContext()
         {
             try
             {
                 var result = await _contextService.GellAllContextAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -54,7 +54,14 @@ namespace WebApi.Controllers
             {
                 if (ContextAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _contextService.AddContextAsync(ContextAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _contextService.AddContextAsync(ContextAddDto, userId);
                 if (result == Guid.Empty)
                 {
                     return BadRequest();   
@@ -110,7 +117,12 @@ namespace WebApi.Controllers
         {
             try
             {
-                var result = await _contextService.UpdateContextAsync(id, ContextUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+                var result = await _contextService.UpdateContextAsync(id, ContextUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();

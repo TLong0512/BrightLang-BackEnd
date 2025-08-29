@@ -28,7 +28,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _rangeService.GellAllRangeAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -48,7 +48,7 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpGet("range-in-skill-level/{skillLevelId}")]
+        [HttpGet("filter/skill-level{skillLevelId}")]
         public async Task<IActionResult> GetAllRangeInSkillLevelBySkillLevelId(Guid skillLevelId)
         {
             try
@@ -85,7 +85,14 @@ namespace WebApi.Controllers
             {
                 if (RangeAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _rangeService.AddRangeAsync(RangeAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _rangeService.AddRangeAsync(RangeAddDto, userId);
                 if (result == false)
                 {
                     return BadRequest();
@@ -140,7 +147,12 @@ namespace WebApi.Controllers
         {
             try
             {
-                var result = await _rangeService.UpdateRangeAsync(id, RangeUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+                var result = await _rangeService.UpdateRangeAsync(id, RangeUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();

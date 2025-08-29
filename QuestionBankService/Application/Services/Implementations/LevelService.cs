@@ -22,7 +22,7 @@ namespace Application.Services.Implementations
             this._mapper = mapper;
         }
 
-        public async Task<bool> AddLevelAsync(LevelAddDto levelAddDto)
+        public async Task<bool> AddLevelAsync(LevelAddDto levelAddDto, Guid userId)
         {
            
             var existingExamtype = await _unitOfWork.ExamTypeRepository.GetByIdAsync(levelAddDto.ExamTypeId);
@@ -33,7 +33,7 @@ namespace Application.Services.Implementations
             else
             {
                 var newLevel = _mapper.Map<Level>(levelAddDto);
-                await _unitOfWork.LevelRepository.AddAsync(newLevel, new Guid());
+                await _unitOfWork.LevelRepository.AddAsync(newLevel, userId);
                 await _unitOfWork.SaveChangesAsync();
                 return true;
             }
@@ -59,18 +59,19 @@ namespace Application.Services.Implementations
         {
             var result = await _unitOfWork.LevelRepository.GetAllLevelsAsync();
             var listResultDto = _mapper.Map<IEnumerable<LevelViewDto>>(result);
-            return listResultDto;
+            var orderedListResultDto = listResultDto.OrderBy(x => x.Name);
+            return orderedListResultDto;
         }
 
         public async Task<LevelViewDto> GetLevelByIdAsync(Guid id)
         {
-            var result = await _unitOfWork.LevelRepository.GetLevelById(id);
+            var result = await _unitOfWork.LevelRepository.GetLevelByIdAsync(id);
             return _mapper.Map<LevelViewDto>(result);
         }
 
-        public async Task<LevelViewDto> UpdateLevelAsync(Guid id, LevelUpdateDto levelUpdateDto)
+        public async Task<LevelViewDto> UpdateLevelAsync(Guid id, LevelUpdateDto levelUpdateDto, Guid userId)
         {
-            var level = await _unitOfWork.LevelRepository.GetLevelById(id);
+            var level = await _unitOfWork.LevelRepository.GetLevelByIdAsync(id);
             if (level == null)
             {
                 return null;
@@ -88,7 +89,7 @@ namespace Application.Services.Implementations
                     var updatedLevel = _mapper.Map<Level>(levelUpdateDto);
                     level.ExamTypeId = updatedLevel.ExamTypeId;
                     level.Name = updatedLevel.Name;
-                    await _unitOfWork.LevelRepository.Update(level, new Guid());
+                    await _unitOfWork.LevelRepository.Update(level, userId);
                     await _unitOfWork.SaveChangesAsync();
                     return _mapper.Map<LevelViewDto>(level);
                 }

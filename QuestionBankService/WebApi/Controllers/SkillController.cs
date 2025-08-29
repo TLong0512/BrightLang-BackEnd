@@ -25,7 +25,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _skillService.GettAllSkill();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
