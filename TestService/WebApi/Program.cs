@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
 builder.Services.AddScoped<ITestService, TestService>();
+builder.Services.AddScoped<ITestAnswerSevice, TestAnswerService>();
 builder.Services.AddHttpClient();
 
 // Add services to the container.
