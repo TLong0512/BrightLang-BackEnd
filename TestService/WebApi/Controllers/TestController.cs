@@ -6,6 +6,7 @@ using Application.Services.Interfaces;
 using AutoMapper;
 using Azure.Core;
 using Infrastructure.Repositories.Intefaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -19,34 +20,42 @@ namespace WebApi.Controllers
     public class TestController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        private const string BaseApiUrl = "http://localhost:5003/api";
+        private readonly string _baseApiUrl;
         private readonly ITestService _testService;
         private readonly ITestQuestionService _testQuestionService;
 
         private readonly IMapper _mapper;
-        public TestController(HttpClient httpClient, ITestService testService, IMapper mapper, ITestQuestionService testQuestionService)
+        public TestController(HttpClient httpClient, ITestService testService, IMapper mapper, ITestQuestionService testQuestionService, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _testService = testService;
             _mapper = mapper;
             _testQuestionService = testQuestionService;
+            _baseApiUrl = configuration["ApiSettings:_baseApiUrl"] ?? throw new InvalidOperationException("_baseApiUrl is not configured.");
         }
 
         [HttpPost("create-a-test/{numberPerSkillLevel?}")]
+        [Authorize]
         public async Task<IActionResult> CreateTestAsync(int numberPerSkillLevel = 2)
         {
-            var response = await _httpClient.GetAsync($"{BaseApiUrl}/Question/generate/all/{numberPerSkillLevel}");
+            var userIdClaim = User.FindFirst("nameid")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("UserId not found in token");
+
+            Guid userId = Guid.Parse(userIdClaim);
+
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Question/generate/all/{numberPerSkillLevel}");
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode, "Request Failed");
             var json = await response.Content.ReadAsStringAsync();
             var questionIds = JsonSerializer.Deserialize<IEnumerable<Guid>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            var testId = await _testService.CreateTestAsync(new Guid(), questionIds);
+            var testId = await _testService.CreateTestAsync(userId, questionIds);
 
             var requestContent = new StringContent(
                     JsonSerializer.Serialize(questionIds),
                     Encoding.UTF8,
                     "application/json");
-            var summaryResponse = await _httpClient.PostAsync($"{BaseApiUrl}/Question/get-by-list/summary", requestContent);
+            var summaryResponse = await _httpClient.PostAsync($"{_baseApiUrl}/Question/get-by-list/summary", requestContent);
             if (!summaryResponse.IsSuccessStatusCode)
                 return StatusCode((int)summaryResponse.StatusCode, "Request Failed when fetching question summaries");
             var summaryJson = await summaryResponse.Content.ReadAsStringAsync();
@@ -63,14 +72,22 @@ namespace WebApi.Controllers
             return Ok(testInprogressDto);
         }
         [HttpPost("submit/{testId}")]
+        [Authorize]
         public async Task<IActionResult> SubmitTestAsync(Guid testId, [FromBody] SubmitTestRequestDto submitTestRequestDto)
         {
             await _testService.SubmitAnswerInATest(Guid.NewGuid(), testId, submitTestRequestDto.listAnswerIds, submitTestRequestDto.listTrueAnswerIds);
             return Ok(("Result has been saved"));
         }
-        [HttpGet("all-test/{userId}")]
-        public async Task<IActionResult> GetAllTestAsync(Guid userId, int page = 1, int pageSize = 10)
+        [HttpGet("all-test/user-id")]
+        [Authorize]
+        public async Task<IActionResult> GetAllTestAsync(int page = 1, int pageSize = 10)
         {
+            var userIdClaim = User.FindFirst("nameid")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("UserId not found in token");
+
+            Guid userId = Guid.Parse(userIdClaim);
+
             if (userId == Guid.Empty)
             {
                 return BadRequest("invalid id");
@@ -86,6 +103,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
         [HttpGet("test-detail/{testId}")]
+        [Authorize]
         public async Task<IActionResult> GetTestDetailAsync(Guid testId)
         {
             if (testId == Guid.Empty)
@@ -97,7 +115,7 @@ namespace WebApi.Controllers
                                 JsonSerializer.Serialize(questionIds),
                                 Encoding.UTF8,
                                 "application/json");
-            var detailResponse = await _httpClient.PostAsync($"{BaseApiUrl}/Question/get-by-list/detail", requestContent);
+            var detailResponse = await _httpClient.PostAsync($"{_baseApiUrl}/Question/get-by-list/detail", requestContent);
             if (!detailResponse.IsSuccessStatusCode)
                 return StatusCode((int)detailResponse.StatusCode, "Request Failed when fetching question details");
             var summaryJson = await detailResponse.Content.ReadAsStringAsync();
