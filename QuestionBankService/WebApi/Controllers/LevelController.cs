@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.LevelDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _levelService.GellAllLevelAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -45,13 +46,21 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddLevel([FromBody] LevelAddDto LevelAddDto)
         {
             try
             {
                 if (LevelAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _levelService.AddLevelAsync(LevelAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _levelService.AddLevelAsync(LevelAddDto, userId);
                 if(result == false)
                 {
                     return BadRequest();
@@ -101,11 +110,17 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateLevel(Guid id, LevelUpdateDto LevelUpdateDto)
         {
             try
             {
-                var result = await _levelService.UpdateLevelAsync(id, LevelUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+                var result = await _levelService.UpdateLevelAsync(id, LevelUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();
@@ -129,6 +144,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteLevel(Guid id)
         {
             try

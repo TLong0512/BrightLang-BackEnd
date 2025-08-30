@@ -12,6 +12,16 @@ using WebApi.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddHttpContextAccessor();
 
 // do i need to tell the app that it needs to load env varaibles? i set the env variables in the .env file (Docker)
@@ -68,6 +78,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseCors("AllowAngular");
 
 // if (app.Environment.IsDevelopment())
 {

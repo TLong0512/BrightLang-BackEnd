@@ -24,7 +24,7 @@ namespace Application.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<bool> AddRangeAsync(RangeAddDto rangeAddDto)
+        public async Task<bool> AddRangeAsync(RangeAddDto rangeAddDto, Guid userId)
         {
             
             var existingSkillLevel = await _unitOfWork.SkillLevelRepository.GetByIdAsync(rangeAddDto.SkillLevelId);
@@ -35,7 +35,7 @@ namespace Application.Services.Implementations
             else
             {
                 var newRange = _mapper.Map<Range>(rangeAddDto);
-                await _unitOfWork.RangeRepository.AddAsync(newRange, Guid.Empty);
+                await _unitOfWork.RangeRepository.AddAsync(newRange,userId);
                 await _unitOfWork.SaveChangesAsync();
                 return true;
             }
@@ -64,6 +64,17 @@ namespace Application.Services.Implementations
             return listResultDto;
         }
 
+        public async Task<IEnumerable<RangeWithQuestionNumberDto>> GetAllRangeIdByExamTypeAndSkill(Guid ExamTypeId, Guid SkillId)
+        {
+            var listLevel = await _unitOfWork.LevelRepository.GetByConditionAsync(x => x.ExamTypeId == ExamTypeId);
+            var listLevelIds = listLevel.Select(x => x.Id);
+            var listExistingSkillLevels = await _unitOfWork.SkillLevelRepository.GetByConditionAsync(x => x.SkillId == SkillId &&
+                                                                        listLevelIds.Contains(x.LevelId));
+            var listExistingSKillLevelIds = listExistingSkillLevels.Select(x => x.Id);
+            var listExistingRanges = await _unitOfWork.RangeRepository.GetByConditionAsync(x => listExistingSKillLevelIds.Contains(x.SkillLevelId));
+            return _mapper.Map<IEnumerable<RangeWithQuestionNumberDto>>(listExistingRanges);
+        }
+
         public async Task<RangeViewDto> GetRangeByIdAsync(Guid id)
         {
             var result = await _unitOfWork.RangeRepository.GetByIdAsync(id);
@@ -85,7 +96,7 @@ namespace Application.Services.Implementations
             }
         }
 
-        public async Task<RangeViewDto> UpdateRangeAsync(Guid id, RangeUpdateDto rangeUpdateDto)
+        public async Task<RangeViewDto> UpdateRangeAsync(Guid id, RangeUpdateDto rangeUpdateDto, Guid userId)
         {
             var range = await _unitOfWork.RangeRepository.GetByIdAsync(id);
             if (range == null)
@@ -106,7 +117,7 @@ namespace Application.Services.Implementations
                     range.SkillLevelId = updatedRange.SkillLevelId;
                     range.StartQuestionNumber = updatedRange.StartQuestionNumber;
                     range.EndQuestionNumber = updatedRange.EndQuestionNumber;
-                    await _unitOfWork.RangeRepository.Update(range, new Guid());
+                    await _unitOfWork.RangeRepository.Update(range, userId);
                     await _unitOfWork.SaveChangesAsync();
                     return _mapper.Map<RangeViewDto>(range);
                 }

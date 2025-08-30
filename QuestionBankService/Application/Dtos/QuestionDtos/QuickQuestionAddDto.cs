@@ -13,7 +13,7 @@ namespace Application.Dtos.QuestionDtos
         public int QuestionNumber { get; set; }
         public string Content { get; set; }
         public string Explain { get; set; }
-        public QuickContextAddDto QuickContextAddDto { get; set; }  
-        public IEnumerable<QuickAnswerAddDto> QuickAnswerAddDtos { get; set; }
+        public QuickContextAddDto Context { get; set; }  
+        public IEnumerable<QuickAnswerAddDto> AnswerList { get; set; }
     }
 }

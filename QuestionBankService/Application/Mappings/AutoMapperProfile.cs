@@ -42,20 +42,22 @@ namespace Application.Mappings
             CreateMap<Range, RangeViewDto>().ReverseMap();
             CreateMap<Range, RangeAddDto>().ReverseMap();
             CreateMap<Range, RangeUpdateDto>().ReverseMap();
+            CreateMap<Range, RangeWithQuestionNumberDto>().ReverseMap();
 
             CreateMap<Context, ContextAddDto>().ReverseMap();
-            CreateMap<Context, ContextViewDto>()
-                .ForMember(x => x.RangeName, y => y.MapFrom(z => z.Range.Name))
-                .ReverseMap();
+            CreateMap<Context, ContextViewDto>().ReverseMap();
             CreateMap<Context, ContextUpdateDto>().ReverseMap();
 
             CreateMap<Question, QuestionAddDto>().ReverseMap();
-            CreateMap<Question, QuestionViewDto>().ReverseMap();
+            CreateMap<Question, QuestionViewDto>()
+                .ReverseMap();
             CreateMap<Question, QuestionUpdateDto>().ReverseMap();
+
 
             CreateMap<Answer, AnswerAddDto>().ReverseMap();
             CreateMap<Answer, AnswerUpdateDto>().ReverseMap();
             CreateMap<Answer, AnswerViewDto>().ReverseMap();
+            CreateMap<AnswerSummaryDto, Answer>().ReverseMap();
         }
     }
 }

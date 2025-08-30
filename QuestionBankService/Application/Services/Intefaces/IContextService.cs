@@ -11,8 +11,8 @@ namespace Application.Services.Intefaces
     {
         public Task<IEnumerable<ContextViewDto>> GellAllContextAsync();
         public Task<ContextViewDto> GetContextByIdAsync(Guid id);
-        public Task<Guid> AddContextAsync(ContextAddDto ContextAddDto);
-        public Task<ContextViewDto> UpdateContextAsync(Guid id, ContextUpdateDto ContextUpdateDto);
+        public Task<Guid> AddContextAsync(ContextAddDto ContextAddDto, Guid userId);
+        public Task<ContextViewDto> UpdateContextAsync(Guid id, ContextUpdateDto ContextUpdateDto, Guid userId);
         public Task<bool> DeleteContextAsync(Guid id);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Services.Implementations;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +25,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _skillService.GettAllSkill();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }

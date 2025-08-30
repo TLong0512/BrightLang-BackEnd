@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.ContextDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +21,13 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        //[Authorize]
         public async Task<IActionResult> GettAllContext()
         {
             try
             {
                 var result = await _contextService.GellAllContextAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -45,13 +47,21 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddContext([FromBody] ContextAddDto ContextAddDto)
         {
             try
             {
                 if (ContextAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _contextService.AddContextAsync(ContextAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _contextService.AddContextAsync(ContextAddDto, userId);
                 if (result == Guid.Empty)
                 {
                     return BadRequest();   
@@ -72,6 +82,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetContextById(Guid id)
         {
             try
@@ -101,11 +112,17 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateContext(Guid id, ContextUpdateDto ContextUpdateDto)
         {
             try
             {
-                var result = await _contextService.UpdateContextAsync(id, ContextUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+                var result = await _contextService.UpdateContextAsync(id, ContextUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();
@@ -129,6 +146,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteContext(Guid id)
         {
             try

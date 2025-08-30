@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories.Implementations
 
         public async Task<Question> GetQuestionById(Guid id)
         {
-            return await _context.Questions.Include(x => x.Context).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Questions.Include(x => x.Context).Include(x => x.Answers).FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.ExamTypeDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _examTypeService.GellAllExamTypeAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -45,13 +46,21 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddExamType([FromBody] ExamTypeAddDto examTypeAddDto)
         {
             try
             {
                 if (examTypeAddDto == null)
                 { return BadRequest("Invalid data"); }
-                await _examTypeService.AddExamTypeAsync(examTypeAddDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                await _examTypeService.AddExamTypeAsync(examTypeAddDto, userId);
                 return Ok("Add successfully");
             }
             catch (ArgumentException ex)
@@ -97,11 +106,18 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateExamType(Guid id, ExamTypeUpdateDto examTypeUpdateDto)
         {
             try
             {
-                var result = await _examTypeService.UpdateExamTypeAsync(id, examTypeUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _examTypeService.UpdateExamTypeAsync(id, examTypeUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();
@@ -125,6 +141,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteExamType(Guid id)
         {
             try

@@ -30,6 +30,7 @@ services:
       
       - ServiceUrls__Users=http://user-service:8080
       - ServiceUrls__Vocabulary=http://vocabulary-service:8080
+      - ServiceUrls__QuestionBank=http://question-bank-service:8080
 
       - ConnectionStrings__DefaultConnection=Server=user-db,1433;Database=UserDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
       
@@ -56,7 +57,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${SA_PASSWORD:-Str0ng!Passw0rd}
-    # ports: ["6001:1433"] # debug
+    # ports: ["6002:1433"] # debug
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$SA_PASSWORD -Q 'SELECT 1' || exit 1"]
       interval: 10s
@@ -81,6 +82,7 @@ services:
       
       - ServiceUrls__Users=http://user-service:8080
       - ServiceUrls__Vocabulary=http://vocabulary-service:8080
+      - ServiceUrls__QuestionBank=http://question-bank-service:8080
 
       - ConnectionStrings__DefaultConnection=Server=vocabulary-db,1433;Database=VocabularyDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
       
@@ -92,10 +94,62 @@ services:
       - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
       
     depends_on:
-      user-db:
+      vocabulary-db:
         condition: service_healthy
     ports: ["5002:8080"] # debug
     networks: [vocabulary-network, main-network]
+
+
+
+
+
+  question-bank-db:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: question-bank-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD:-Str0ng!Passw0rd}
+    # ports: ["6003:1433"] # debug
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$SA_PASSWORD -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 25
+      # I have adjusted this value, considering some old machine would take a lot of time for a db container 
+       # to start up. if 25 * 10 = 250s is not enough, consider buying new computer.
+    networks: [question-bank-network]
+    # Nếu máy Mac Apple Silicon bị lỗi, bỏ comment 2 dòng dưới:
+    # platform: linux/amd64
+    # deploy: { }
+
+  question-bank-service:
+    build:
+      context: ./QuestionBankService
+      dockerfile: Dockerfile # redundant, only for explicitness.
+      args:
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    container_name: question-bank-service
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      
+      - ServiceUrls__Users=http://user-service:8080
+      - ServiceUrls__Vocabulary=http://vocabulary-service:8080
+      - ServiceUrls__QuestionBank=http://question-bank-service:8080
+
+      - ConnectionStrings__DefaultConnection=Server=question-bank-db,1433;Database=QuestionBankDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
+      
+      - Email__Username=${EMAIL__USERNAME} # TODO: remove if unused
+      - Email__Password=${EMAIL__PASSWORD} # TODO: remove if unused
+
+      - JwtSettings__Key=${JWTSETTINGS__KEY} 
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
+      
+    depends_on:
+      question-bank-db:
+        condition: service_healthy
+    ports: ["5003:8080"] # debug
+    networks: [question-bank-network, main-network]
 
 
 
@@ -106,9 +160,9 @@ services:
   #   container_name: apigateway
   #   environment:
   #     - ASPNETCORE_URLS=http://+:8080
-  #     - JwtSettings__Key=${JWTSETTINGS_KEY} 
-  #     - JwtSettings__Issuer=${JWTSETTINGS_ISSUER} 
-  #     - JwtSettings__Audience=${JWTSETTINGS_AUDIENCE} 
+  #     - JwtSettings__Key=${JWTSETTINGS__KEY} 
+  #     - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
+  #     - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
   #   depends_on:
   #     user-service:
   #       condition: service_started
@@ -122,4 +176,8 @@ networks:
     driver: bridge # liên kết các service với nhau và với apigateway
   user-network:
     driver: bridge # liên kết riêng user-db với user-service
+  vocabulary-network:
+    driver: bridge # liên kết riêng vocabulary-db với vocabulary-service
+  question-bank-network:
+    driver: bridge # liên kết riêng question-bank-db với question-bank-service
   

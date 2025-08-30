@@ -343,7 +343,7 @@ namespace Infrastructure.Contexts
               new Range
               {
                   Id = guids[37],
-                  SkillLevelId = guids[12],
+                  SkillLevelId = guids[18],
                   StartQuestionNumber = 21,
                   EndQuestionNumber = 25,
                   Name = "Chọn thông tin chi tiết trong đoạn văn ngắn."
@@ -351,7 +351,7 @@ namespace Infrastructure.Contexts
               new Range
               {
                   Id = guids[38],
-                  SkillLevelId = guids[12],
+                  SkillLevelId = guids[18],
                   StartQuestionNumber = 26,
                   EndQuestionNumber = 30,
                   Name = "Điền từ/cụm từ vào câu trong đoạn văn."
@@ -359,7 +359,7 @@ namespace Infrastructure.Contexts
               new Range
               {
                   Id = guids[39],
-                  SkillLevelId = guids[12],
+                  SkillLevelId = guids[18],
                   StartQuestionNumber = 31,
                   EndQuestionNumber = 35,
                   Name = "Chọn ngữ pháp phù hợp trong đoạn văn."
@@ -367,7 +367,7 @@ namespace Infrastructure.Contexts
               new Range
               {
                   Id = guids[40],
-                  SkillLevelId = guids[12],
+                  SkillLevelId = guids[18],
                   StartQuestionNumber = 36,
                   EndQuestionNumber = 40,
                   Name = "Chọn ý chính hoặc thông tin chi tiết trong đoạn văn."

@@ -3,6 +3,7 @@ using Application.Services.Implementations;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +28,7 @@ namespace WebApi.Controllers
             try
             {
                 var result = await _rangeService.GellAllRangeAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -47,7 +48,7 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpGet("range-in-skill-level/{skillLevelId}")]
+        [HttpGet("filter/skill-level/{skillLevelId}")]
         public async Task<IActionResult> GetAllRangeInSkillLevelBySkillLevelId(Guid skillLevelId)
         {
             try
@@ -77,13 +78,21 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRange([FromBody] RangeAddDto RangeAddDto)
         {
             try
             {
                 if (RangeAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _rangeService.AddRangeAsync(RangeAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _rangeService.AddRangeAsync(RangeAddDto, userId);
                 if (result == false)
                 {
                     return BadRequest();
@@ -133,11 +142,17 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRange(Guid id, RangeUpdateDto RangeUpdateDto)
         {
             try
             {
-                var result = await _rangeService.UpdateRangeAsync(id, RangeUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+                var result = await _rangeService.UpdateRangeAsync(id, RangeUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();
@@ -161,6 +176,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRange(Guid id)
         {
             try

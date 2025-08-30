@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.AnswerDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +21,13 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GettAllAnswer()
         {
             try
             {
                 var result = await _answerService.GellAllAnswerAsync();
-                if (result == null || !result.Any())
+                if (result == null)
                 {
                     return NotFound();
                 }
@@ -74,13 +76,21 @@ namespace WebApi.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddAnswer([FromBody] AnswerAddDto AnswerAddDto)
         {
             try
             {
                 if (AnswerAddDto == null)
                 { return BadRequest("Invalid data"); }
-                var result = await _answerService.AddAnswerAsync(AnswerAddDto);
+
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _answerService.AddAnswerAsync(AnswerAddDto, userId);
                 if (result == false)
                 {
                     return BadRequest();
@@ -101,6 +111,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetAnswerById(Guid id)
         {
             try
@@ -130,11 +141,18 @@ namespace WebApi.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAnswer(Guid id, AnswerUpdateDto AnswerUpdateDto)
         {
             try
             {
-                var result = await _answerService.UpdateAnswerAsync(id, AnswerUpdateDto);
+                var userIdClaim = User.FindFirst("nameid")?.Value;
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("UserId not found in token");
+
+                Guid userId = Guid.Parse(userIdClaim);
+
+                var result = await _answerService.UpdateAnswerAsync(id, AnswerUpdateDto, userId);
                 if (result == null)
                 {
                     return NotFound();
@@ -158,6 +176,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAnswer(Guid id)
         {
             try

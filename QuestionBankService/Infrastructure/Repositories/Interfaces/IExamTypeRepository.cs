@@ -9,5 +9,7 @@ namespace Infrastructure.Repositories.Interfaces
 {
     public interface IExamTypeRepository : IGenericRepository<ExamType>
     {
+        public Task<ExamType> GetExamTypeByIdAsync(Guid id);
+
     }
 }
