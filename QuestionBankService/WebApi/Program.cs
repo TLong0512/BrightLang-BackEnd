@@ -4,6 +4,7 @@ using Application.Services.Implementations;
 using Application.Services.Intefaces;
 using Domain.Entities;
 using Infrastructure.Contexts;
+using Infrastructure.Seeds;
 using Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<DefaultContext>(ops => ops.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfile>());
 
 builder.Services.AddScoped<IExamTypeService, ExamTypeService>();
 builder.Services.AddScoped<ILevelService, LevelService>();
@@ -49,10 +50,17 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (IServiceScope serviceScope = app.Services.CreateScope())
+{
+    IServiceProvider serviceScopeProvider = serviceScope.ServiceProvider;
+    DefaultContext dbContext = serviceScopeProvider.GetRequiredService<DefaultContext>();
+    await Seed.ApplyAsync(dbContext, serviceScopeProvider);
 }
 
 app.UseHttpsRedirection();
