@@ -87,6 +87,9 @@ public class ProcessController : ControllerBase
         if (roadmapElement.RoadmapId != roadmap.Id)
             return BadRequest("Roadmap element doesn't belong to the original roadmap.");
 
+        if (await unitOfWork.Processes.GetByIdAsync(processPostDto.UserRoadmapId, processPostDto.RoadmapElementId) != null)
+            return BadRequest("Process already exist.");
+
         Process newProcess = new Process
         {
             RoadmapElementId = processPostDto.RoadmapElementId,
