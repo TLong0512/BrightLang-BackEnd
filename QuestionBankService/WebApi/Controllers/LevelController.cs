@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WebApi.Controllers
 {
@@ -54,7 +55,7 @@ namespace WebApi.Controllers
                 if (LevelAddDto == null)
                 { return BadRequest("Invalid data"); }
 
-                var userIdClaim = User.FindFirst("nameid")?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdClaim))
                     return Unauthorized("UserId not found in token");
 
@@ -115,7 +116,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                var userIdClaim = User.FindFirst("nameid")?.Value;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdClaim))
                     return Unauthorized("UserId not found in token");
 
