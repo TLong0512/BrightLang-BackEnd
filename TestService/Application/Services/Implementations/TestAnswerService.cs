@@ -1,5 +1,6 @@
 ﻿using Application.Services.Interfaces;
 using AutoMapper;
+using Domain.Entities;
 using Infrastructure.UnitOfWorks;
 using System;
 using System.Collections.Generic;

@@ -21,11 +21,13 @@ namespace Application.Services.Implementations
     {
         protected readonly IUnitOfWork _unitOfWork;
         protected readonly IMapper _mapper;
+        protected readonly ITestAnswerSevice _testAnswerService; 
         
-        public TestService(IUnitOfWork unitOfWork, IMapper mapper)
+        public TestService(IUnitOfWork unitOfWork, IMapper mapper, ITestAnswerSevice testAnswerSevice)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _testAnswerService = testAnswerSevice;
         }
 
 
@@ -69,15 +71,14 @@ namespace Application.Services.Implementations
                 Items = listTestSummaryDtos
             };
         }
-        public Task<TestReviewDto> GetTestDetailAsync(Guid testId, IEnumerable<QuestionDetailDto> questionDetailDtos, IEnumerable<Guid> chooseAnswerIds)
+        public async Task<TestReviewDto> GetTestDetailAsync(Guid testId, IEnumerable<QuestionDetailDto> questionDetailDtos)
         {
-            var result = new TestReviewDto
-            {
-                TestId = testId,
-                QuestionDetails = questionDetailDtos,
-                ChoseAnswerIds = chooseAnswerIds
-            };
-            return Task.FromResult(result);
+            var extisTest = await _unitOfWork.TestRepository.GetByIdAsync(testId);
+            var choseAnswerIds = await _testAnswerService.GetAnswerIdsInTestIdAsync(testId);
+            var result = _mapper.Map<TestReviewDto>(extisTest);
+            result.QuestionDetails = questionDetailDtos;
+            result.ChoseAnswerIds = choseAnswerIds;
+            return result;
         }
 
         public async Task SubmitAnswerInATest(Guid userId, Guid testId, IEnumerable<Guid> listAnswerIds, IEnumerable<Guid> listTrueAnswerIds)
@@ -89,12 +90,7 @@ namespace Application.Services.Implementations
                 await _unitOfWork.SaveChangesAsync();
             }
             var test = await _unitOfWork.TestRepository.GetByIdAsync(testId);
-            int cnt = 0;
-            foreach(var id in listAnswerIds)
-            {
-                if (listTrueAnswerIds.Contains(id))
-                    cnt++;
-            }
+            int cnt = listAnswerIds.Count(x => listAnswerIds.Contains(x));
             test.Score = cnt;
             await _unitOfWork.TestRepository.Update(test, userId);
             await _unitOfWork.SaveChangesAsync();

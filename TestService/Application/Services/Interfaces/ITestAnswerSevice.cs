@@ -9,6 +9,5 @@ namespace Application.Services.Interfaces
     public interface ITestAnswerSevice
     {
         public Task<IEnumerable<Guid>> GetAnswerIdsInTestIdAsync(Guid testId);
-
     }
 }

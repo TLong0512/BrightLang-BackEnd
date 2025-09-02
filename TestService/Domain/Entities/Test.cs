@@ -10,6 +10,7 @@ namespace Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        public int Duration { get; set; }
         public int Score { get; set; } = 0;
         public List<TestQuestion> TestQuestions { get; set; }   
         public List<TestAnswer> TestAnswers { get; set; }

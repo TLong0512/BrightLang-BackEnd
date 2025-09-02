@@ -15,7 +15,6 @@ namespace Application.Dtos.QuestionDtos
         public string RangeName { get; set; }
         public string SkillName { get; set; }
         public string LevelName { get; set; }
-
         public IEnumerable<AnswerViewDto> AnswerDetails { get; set; }
     }
 }

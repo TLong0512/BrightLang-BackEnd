@@ -9,7 +9,9 @@ namespace Application.Dtos.TestDtos
 {
     public class TestReviewDto
     {
-        public Guid TestId { get; set; }
+        public Guid Id { get; set; }
+        public string CreatedDate { get; set; }
+        public int Duration { get; set; }
         public IEnumerable<QuestionDetailDto> QuestionDetails { get; set; } 
         public IEnumerable<Guid> ChoseAnswerIds { get; set; }
     }

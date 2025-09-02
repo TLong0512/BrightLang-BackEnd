@@ -13,7 +13,7 @@ namespace Application.Services.Interfaces
     public interface ITestService
     {
         public Task<PageResult<TestSummaryDto>> GetAllTestByUserIdAsync(Guid userId, int page = 1, int pageSize = 10);
-        public Task<TestReviewDto> GetTestDetailAsync(Guid testId,IEnumerable<QuestionDetailDto> questionDetailDtos, IEnumerable<Guid> chooseAnswerIds);
+        public Task<TestReviewDto> GetTestDetailAsync(Guid testId,IEnumerable<QuestionDetailDto> questionDetailDtos);
         public Task<Guid> CreateTestAsync(Guid userId,  IEnumerable<Guid> questionIds);
         public Task SubmitAnswerInATest(Guid userId, Guid testId, IEnumerable<Guid> listAnswerIds,IEnumerable<Guid> listTrueAnswerIds);
     }

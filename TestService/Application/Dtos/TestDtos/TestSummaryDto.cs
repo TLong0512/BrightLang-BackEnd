@@ -11,7 +11,7 @@ namespace Application.Dtos.TestDtos
     public class TestSummaryDto
     {
         public Guid Id { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public string CreatedDate { get; set; }
         public string Score { get; set; }
     }
 }

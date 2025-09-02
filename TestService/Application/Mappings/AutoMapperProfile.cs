@@ -18,8 +18,18 @@ namespace Application.Mappings
             CreateMap<TestAddDto, Test>().ReverseMap();
 
             CreateMap<TestQuestionAddDto, TestQuestion>().ReverseMap();
-            CreateMap<TestSummaryDto, Test>().ReverseMap();
+            CreateMap<Test, TestSummaryDto>()
+                .ForMember(dest => dest.CreatedDate,
+                           opt => opt.MapFrom(src => src.CreatedDate.HasValue
+                               ? src.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm")
+                               : ""))
+                .ReverseMap();
             CreateMap<TestAnswer, TestAnswerDto>().ReverseMap();
+            CreateMap<Test, TestReviewDto>()
+                .ForMember(dest => dest.CreatedDate, 
+                           opt => opt.MapFrom(src => src.CreatedDate.HasValue
+                           ? src.CreatedDate.Value.ToString("dd/MM/yyyy HH:mm"): ""))
+                .ReverseMap();
         }
     }
 
