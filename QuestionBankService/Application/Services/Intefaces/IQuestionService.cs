@@ -1,5 +1,8 @@
-﻿using Application.Dtos.ContextDtos;
-using Application.Dtos.QuestionDtos;
+﻿using Application.Dtos.BaseDtos;
+using Application.Dtos.ContextDtos;
+using Application.Dtos.QuestionDtos.QuestionAddDtos;
+using Application.Dtos.QuestionDtos.QuestionUpdateDtos;
+using Application.Dtos.QuestionDtos.QuestionViewDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +14,12 @@ namespace Application.Services.Intefaces
 {
     public interface IQuestionService
     {
-        public Task<IEnumerable<QuestionViewDto>> GellAllQuestionAsync();
+        public Task<PageResult<QuestionViewDto>> GellAllQuestionAsync(int page = 1, int pageSize = 10);
 
         public Task<Guid> AddQuestionAsync(QuestionAddDto questionAddDto, Guid userId);
         public Task<QuestionViewDto> UpdateQuestionAsync(Guid id, QuestionUpdateDto questionUpdateDto, Guid userId);
         public Task<bool> DeleteQuestionAsync(Guid id);
-        public Task<IEnumerable<QuestionViewDto>> GetQuestionsByContextIdAsync(Guid ContextId);
+        public Task<PageResult<QuestionViewDto>> GetQuestionsByRangeIdAsync(Guid rangeId, int page = 1, int pageSize = 10);
         public Task<bool> QuickAddQuestion(Guid skillId, Guid examTypeId, IEnumerable<QuickQuestionAddDto> quickQuestionAddDtos, Guid userId);
         public Task<QuestionSummaryDto> GetQuestionSummaryByIdAsync(Guid id);
         public Task<IEnumerable<QuestionSummaryDto>> GetAllQuestionSummaryByListIdAsync(List<Guid> QuestionIds);

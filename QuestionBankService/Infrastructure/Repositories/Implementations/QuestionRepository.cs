@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Infrastructure.Repositories.Implementations
 {
@@ -16,9 +17,13 @@ namespace Infrastructure.Repositories.Implementations
         public QuestionRepository(DefaultContext context) : base(context)
         {
         }
-        public async Task<IEnumerable<Question>> GetAllQuestionsAsync()
+        public IQueryable<Question> GetAllQuestionsAsync()
         {
-            return await _context.Questions.Include(x => x.Context).ToListAsync();
+            return _context.Set<Question>();
+        }
+        public IQueryable<Question> GetQuestionByConditionPaging(Expression<Func<Question, bool>> predicate)
+        {
+            return _context.Set<Question>().Where(predicate).OrderByDescending(x => x.CreatedDate);
         }
 
         public async Task<IEnumerable<Question>> GetQuestionByCondition(Expression<Func<Question, bool>> predicate)

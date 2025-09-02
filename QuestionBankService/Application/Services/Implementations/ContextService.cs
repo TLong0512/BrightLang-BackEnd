@@ -1,4 +1,6 @@
 ﻿using Application.Dtos.ContextDtos;
+using Application.Dtos.ContextDtos.ContestAddDto;
+using Application.Dtos.ContextDtos.ContextUpdateDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Domain.Entities;
@@ -65,6 +67,12 @@ namespace Application.Services.Implementations
         public async Task<ContextViewDto> GetContextByIdAsync(Guid id)
         {
             var result = await _unitOfWork.ContextRepository.GetContextById(id);
+            return _mapper.Map<ContextViewDto>(result);
+        }
+
+        public async Task<ContextViewDto> GetContextByRangeIdAsync(Guid rangeId)
+        {
+            var result = await _unitOfWork.ContextRepository.GetByConditionAsync(x => x.RangeId == rangeId);
             return _mapper.Map<ContextViewDto>(result);
         }
 

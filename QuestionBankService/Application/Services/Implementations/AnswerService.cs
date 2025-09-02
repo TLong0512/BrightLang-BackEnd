@@ -1,4 +1,6 @@
-﻿using Application.Dtos.AnswerDtos;
+﻿using Application.Dtos.AnswerDtos.AnswerAddDtos;
+using Application.Dtos.AnswerDtos.AnswerUpdateDtos;
+using Application.Dtos.AnswerDtos.AnswerViewDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Domain.Entities;

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dtos.ContextDtos
+namespace Application.Dtos.QuestionDtos.QuestionAddDtos
 {
-    public class QuickContextAddDto
+    public class QuestionAddDto
     {
+        public Guid ContextId { get; set; }
+        public int QuestionNumber { get; set; }
         public string Content { get; set; }
         public string Explain { get; set; }
-        public bool IsBelongTest { get; set; }
     }
 }

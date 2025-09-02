@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dtos.AnswerDtos
+namespace Application.Dtos.AnswerDtos.AnswerViewDtos
 {
-    public class QuickAnswerAddDto
+    public class AnswerSummaryDto
     {
+        public Guid Id { get; set; }
         public string Value { get; set; }
-        public string Explain { get; set; }
-        public bool IsCorrect { get; set; }
     }
 }
