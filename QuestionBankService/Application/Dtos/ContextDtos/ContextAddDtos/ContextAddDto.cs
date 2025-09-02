@@ -1,13 +1,12 @@
-﻿using Domain.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dtos.ContextDtos
+namespace Application.Dtos.ContextDtos.ContestAddDto
 {
-    public class ContextUpdateDto
+    public class ContextAddDto
     {
         public Guid RangeId { get; set; }
         public string Content { get; set; }

@@ -1,4 +1,4 @@
-﻿using Application.Dtos.QuestionDtos;
+﻿using Application.Dtos.QuestionDtos.QuestionViewDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

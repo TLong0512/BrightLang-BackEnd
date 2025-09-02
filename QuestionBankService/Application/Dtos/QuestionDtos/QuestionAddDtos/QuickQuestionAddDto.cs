@@ -1,12 +1,12 @@
-﻿using Application.Dtos.AnswerDtos;
-using Application.Dtos.ContextDtos;
+﻿using Application.Dtos.AnswerDtos.AnswerAddDtos;
+using Application.Dtos.ContextDtos.ContextAddDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dtos.QuestionDtos
+namespace Application.Dtos.QuestionDtos.QuestionAddDtos
 {
     public class QuickQuestionAddDto
     {

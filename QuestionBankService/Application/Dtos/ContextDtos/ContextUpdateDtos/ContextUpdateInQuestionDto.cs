@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dtos.ContextDtos
+namespace Application.Dtos.ContextDtos.ContextUpdateDtos
 {
-    public class ContextAddDto
+    public class ContextUpdateInQuestionDto
     {
-        public Guid RangeId { get; set; }
         public string Content { get; set; }
         public string Explain { get; set; }
         public bool IsBelongTest { get; set; }
