@@ -261,7 +261,7 @@ namespace Application.Services.Implementations
         {
             var skills = await _unitOfWork.SkillRepository.GetAllAsync();
             // only get reading and listening skill
-            var skillIds = skills.Select(x => x.Id).Take(2);
+            var skillIds = skills.Select(x => x.Id);
             var skillLevels = await _unitOfWork.SkillLevelRepository.GetByConditionAsync(x => x.LevelId == levelId && skillIds.Contains(x.SkillId));
             List<Guid> listQuestionIds = new List<Guid>();
             foreach (var skillLevel in skillLevels)
@@ -304,7 +304,7 @@ namespace Application.Services.Implementations
             List<Guid> listGenQuestionResult = new List<Guid>();
             Random random = new Random();
 
-            for (int i = existingRange.StartQuestionNumber; i < existingRange.EndQuestionNumber; ++i)
+            for (int i = existingRange.StartQuestionNumber; i <= existingRange.EndQuestionNumber; ++i)
             {
                 var listCompatibleNumberQuestions = listQuestions.Where(x => x.QuestionNumber == i).ToList();
 
@@ -321,6 +321,7 @@ namespace Application.Services.Implementations
                   && listQuestions.Any(x => x.QuestionNumber == i + 1 && x.ContextId == randomQuestion.ContextId))
                 {
                     var coupleQuestion = listQuestions.First(x => x.QuestionNumber == i + 1 && x.ContextId == randomQuestion.ContextId);
+                    listGenQuestionResult.Add(coupleQuestion.Id);
                     i++;
                 }
             }
