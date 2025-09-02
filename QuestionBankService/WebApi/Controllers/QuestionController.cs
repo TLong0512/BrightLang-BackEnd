@@ -25,11 +25,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllQuestion()
+        public async Task<IActionResult> GetAllQuestion(int page = 1, int pageSize = 10)
         {
             try
             {
-                var result = await _questionService.GellAllQuestionAsync();
+                var result = await _questionService.GellAllQuestionAsync(page, pageSize);
                 if (result == null)
                 {
                     return NotFound();
@@ -192,7 +192,7 @@ namespace WebApi.Controllers
         }
         [HttpGet("filter/context/{contextId}")]
         [Authorize]
-        public async Task<IActionResult> GetQuestionByContextId(Guid contextId)
+        public async Task<IActionResult> GetQuestionByContextId(Guid contextId, int page = 1, int pageSize = 10)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace WebApi.Controllers
                 {
                     return BadRequest("Invalid parametters");
                 }
-                var result = await _questionService.GetQuestionsByContextIdAsync(contextId);
+                var result = await _questionService.GetQuestionsByRangeIdAsync(contextId, page, pageSize);
                 if (result == null)
                 {
                     return NotFound("No result found");

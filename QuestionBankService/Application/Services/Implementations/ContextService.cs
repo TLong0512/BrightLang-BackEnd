@@ -68,6 +68,12 @@ namespace Application.Services.Implementations
             return _mapper.Map<ContextViewDto>(result);
         }
 
+        public async Task<ContextViewDto> GetContextByRangeIdAsync(Guid rangeId)
+        {
+            var result = await _unitOfWork.ContextRepository.GetByConditionAsync(x => x.RangeId == rangeId);
+            return _mapper.Map<ContextViewDto>(result);
+        }
+
         public async Task<ContextViewDto> UpdateContextAsync(Guid id, ContextUpdateDto contextUpdateDto, Guid userId)
         {
             var context = await _unitOfWork.ContextRepository.GetContextById(id);

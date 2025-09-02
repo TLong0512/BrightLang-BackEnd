@@ -1,16 +1,19 @@
 ﻿using Application.Dtos.AnswerDtos;
+using Application.Dtos.BaseDtos;
 using Application.Dtos.ContextDtos;
 using Application.Dtos.QuestionDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.UnitOfWorks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Services.Implementations
 {
@@ -74,11 +77,24 @@ namespace Application.Services.Implementations
                 return true;
             }
         }
-        public async Task<IEnumerable<QuestionViewDto>> GellAllQuestionAsync()
+        public async Task<PageResult<QuestionViewDto>> GellAllQuestionAsync(int page = 1, int pageSize = 10)
         {
-            var result = await _unitOfWork.QuestionRepository.GetAllQuestionsAsync();
+            var result = _unitOfWork.QuestionRepository.GetAllQuestionsAsync();
+
+            var totalItems = await result.CountAsync();
+
+            var listTests = await result.Skip((page - 1) * pageSize)
+                                       .Take(pageSize)
+                                       .ToListAsync();
+
             var listResultDto = _mapper.Map<IEnumerable<QuestionViewDto>>(result);
-            return listResultDto;
+            return new PageResult<QuestionViewDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                Items = listResultDto
+            };
         }
         public async Task<IEnumerable<QuestionDetailDto>> GetAllQuestionDetailByListIdAsync(List<Guid> QuestionIds)
         {
@@ -94,7 +110,7 @@ namespace Application.Services.Implementations
         public async Task<IEnumerable<QuestionSummaryDto>> GetAllQuestionSummaryByListIdAsync(List<Guid> QuestionIds)
         {
             List<QuestionSummaryDto> results = new List<QuestionSummaryDto>();
-            foreach(var questionId in QuestionIds)
+            foreach (var questionId in QuestionIds)
             {
                 var questionSummary = await GetQuestionSummaryByIdAsync(questionId);
                 results.Add(questionSummary);
@@ -119,19 +135,31 @@ namespace Application.Services.Implementations
             };
         }
 
-        public async Task<IEnumerable<QuestionViewDto>> GetQuestionsByContextIdAsync(Guid ContextId)
+        public async Task<PageResult<QuestionViewDto>> GetQuestionsByRangeIdAsync(Guid rangeId, int page = 1, int pageSize = 10)
         {
-            var existingContext = await _unitOfWork.ContextRepository.GetContextById(ContextId);
-            if (existingContext == null)
+            var listContextInRange = await _unitOfWork.ContextRepository.GetByConditionAsync(x => x.RangeId == rangeId);
+            var listContextIds = listContextInRange.Select(x => x.Id);
+
+            var questionsInContext = _unitOfWork.QuestionRepository.GetQuestionByConditionPaging(x => listContextIds.Contains(x.ContextId));
+
+            var totalItems = await questionsInContext.CountAsync();
+
+            questionsInContext = questionsInContext.OrderBy(x => x.QuestionNumber);
+
+            var listTests = await questionsInContext.Skip((page - 1) * pageSize)
+                                       .Take(pageSize)
+                                       .ToListAsync();
+
+            var result = _mapper.Map<IEnumerable<QuestionViewDto>>(listTests);
+
+            return new PageResult<QuestionViewDto>
             {
-                return null;
-            }
-            else
-            {
-                var questionsInContext = await _unitOfWork.QuestionRepository.GetByConditionAsync(x => x.ContextId == ContextId);
-                var orderQuestionInContext = questionsInContext.OrderBy(x => x.QuestionNumber);
-                return _mapper.Map<IEnumerable<QuestionViewDto>>(orderQuestionInContext);
-            }
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                Items = result
+            };
+
         }
         public async Task<QuestionSummaryDto> GetQuestionSummaryByIdAsync(Guid id)
         {
@@ -239,7 +267,7 @@ namespace Application.Services.Implementations
             var listLevels = await _unitOfWork.LevelRepository.GetAllAsync();
             var listLevelIds = listLevels.Select(x => x.Id);
             List<Guid> listQuestionIdResult = new List<Guid>();
-            foreach(var levelIds in listLevelIds)
+            foreach (var levelIds in listLevelIds)
             {
                 var questionIds = await GenerateQuestionByLevelIdAsync(levelIds, numberPerSkillLevel);
                 listQuestionIdResult.AddRange(questionIds);
