@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dtos.AnswerDtos
+namespace Application.Dtos.AnswerDtos.AnswerAddDtos
 {
-    public class AnswerViewDto
+    public class AnswerAddDto
     {
-        public Guid Id { get; set; }
+        public Guid QuestionId { get; set; }
         public string Value { get; set; }
         public string Explain { get; set; }
         public bool IsCorrect { get; set; }

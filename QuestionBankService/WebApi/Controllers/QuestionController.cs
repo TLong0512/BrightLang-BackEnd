@@ -1,4 +1,5 @@
-﻿using Application.Dtos.QuestionDtos;
+﻿using Application.Dtos.QuestionDtos.QuestionAddDtos;
+using Application.Dtos.QuestionDtos.QuestionUpdateDtos;
 using Application.Services;
 using Application.Services.Intefaces;
 using AutoMapper;

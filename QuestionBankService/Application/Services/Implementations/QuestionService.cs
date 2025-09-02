@@ -1,7 +1,12 @@
 ﻿using Application.Dtos.AnswerDtos;
+using Application.Dtos.AnswerDtos.AnswerAddDtos;
+using Application.Dtos.AnswerDtos.AnswerViewDtos;
 using Application.Dtos.BaseDtos;
 using Application.Dtos.ContextDtos;
-using Application.Dtos.QuestionDtos;
+using Application.Dtos.ContextDtos.ContestAddDto;
+using Application.Dtos.QuestionDtos.QuestionAddDtos;
+using Application.Dtos.QuestionDtos.QuestionUpdateDtos;
+using Application.Dtos.QuestionDtos.QuestionViewDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Domain.Entities;
@@ -243,23 +248,40 @@ namespace Application.Services.Implementations
             }
             else
             {
+                // update question
+                var updatedQuestion = _mapper.Map<Question>(questionUpdateDto);
+                question.ContextId = updatedQuestion.ContextId;
+                question.QuestionNumber = updatedQuestion.QuestionNumber;
+                question.Content = updatedQuestion.Content;
+                question.Explain = updatedQuestion.Explain;
+                await _unitOfWork.QuestionRepository.Update(question, userId);
+                await _unitOfWork.SaveChangesAsync();
 
-                var existingContext = await _unitOfWork.ContextRepository.GetByIdAsync(questionUpdateDto.ContextId);
-                if (existingContext == null)
+                // update context
+                var context = question.Context;
+                var updatedContext = _mapper.Map<Context>(questionUpdateDto.Context);
+                context.Content = updatedContext.Content;
+                context.Explain = updatedContext.Content;
+                context.IsBelongTest = updatedContext.IsBelongTest;
+                await _unitOfWork.ContextRepository.Update(context, userId);
+                await _unitOfWork.SaveChangesAsync();
+
+                // update list answer
+                foreach(var answer in question.Answers)
                 {
-                    return null;
-                }
-                else
-                {
-                    var updatedQuestion = _mapper.Map<Question>(questionUpdateDto);
-                    question.ContextId = updatedQuestion.ContextId;
-                    question.QuestionNumber = updatedQuestion.QuestionNumber;
-                    question.Content = updatedQuestion.Content;
-                    question.Explain = updatedQuestion.Explain;
-                    await _unitOfWork.QuestionRepository.Update(question, userId);
+                    await _unitOfWork.AnswerRepository.Delete(answer);
                     await _unitOfWork.SaveChangesAsync();
-                    return _mapper.Map<QuestionViewDto>(question);
                 }
+                
+                foreach(var answerUpdateDto in questionUpdateDto.ListAnswers)
+                {
+                    var updateAnswer = _mapper.Map<Answer>(answerUpdateDto);
+                    updateAnswer.QuestionId = question.Id;
+                    await _unitOfWork.AnswerRepository.AddAsync(updateAnswer, userId);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+
+                return _mapper.Map<QuestionViewDto>(question);
             }
         }
         public async Task<IEnumerable<Guid>> GenerateAllExamTypeQuestionAsync(int numberPerSkillLevel = 2)
