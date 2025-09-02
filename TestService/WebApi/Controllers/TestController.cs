@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 
@@ -31,45 +33,28 @@ namespace WebApi.Controllers
             _testService = testService;
             _mapper = mapper;
             _testQuestionService = testQuestionService;
-            _baseApiUrl = configuration["ApiSettings:_baseApiUrl"] ?? throw new InvalidOperationException("_baseApiUrl is not configured.");
+            _baseApiUrl = configuration["ApiSettings:BaseApiUrl"] ?? throw new InvalidOperationException("_baseApiUrl is not configured.");
         }
 
-        [HttpPost("create-a-test/{numberPerSkillLevel?}")]
+        [HttpPost("create-a-test")]
         [Authorize]
-        public async Task<IActionResult> CreateTestAsync(int numberPerSkillLevel = 2)
+        public async Task<IActionResult> CreateTestAsync()
         {
-            var userIdClaim = User.FindFirst("nameid")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized("UserId not found in token");
 
             Guid userId = Guid.Parse(userIdClaim);
 
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Question/generate/all/{numberPerSkillLevel}");
+
+            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Question/generate/all");
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode, "Request Failed");
             var json = await response.Content.ReadAsStringAsync();
             var questionIds = JsonSerializer.Deserialize<IEnumerable<Guid>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             var testId = await _testService.CreateTestAsync(userId, questionIds);
 
-            var requestContent = new StringContent(
-                    JsonSerializer.Serialize(questionIds),
-                    Encoding.UTF8,
-                    "application/json");
-            var summaryResponse = await _httpClient.PostAsync($"{_baseApiUrl}/Question/get-by-list/summary", requestContent);
-            if (!summaryResponse.IsSuccessStatusCode)
-                return StatusCode((int)summaryResponse.StatusCode, "Request Failed when fetching question summaries");
-            var summaryJson = await summaryResponse.Content.ReadAsStringAsync();
-            var listQuestionResponse = JsonSerializer.Deserialize<IEnumerable<QuestionSummaryDto>>(summaryJson, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            var testInprogressDto = new TestInProgressDto
-            {
-                TestId = testId,
-                ListQuestion = listQuestionResponse
-            };
-            return Ok(testInprogressDto);
+            return Ok(testId);
         }
         [HttpPost("submit/{testId}")]
         [Authorize]
@@ -78,11 +63,11 @@ namespace WebApi.Controllers
             await _testService.SubmitAnswerInATest(Guid.NewGuid(), testId, submitTestRequestDto.listAnswerIds, submitTestRequestDto.listTrueAnswerIds);
             return Ok(("Result has been saved"));
         }
-        [HttpGet("all-test/user-id")]
+        [HttpGet("user-test/all")]
         [Authorize]
         public async Task<IActionResult> GetAllTestAsync(int page = 1, int pageSize = 10)
         {
-            var userIdClaim = User.FindFirst("nameid")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized("UserId not found in token");
 
@@ -107,24 +92,37 @@ namespace WebApi.Controllers
         public async Task<IActionResult> GetTestDetailAsync(Guid testId)
         {
             if (testId == Guid.Empty)
-            {
                 return NotFound();
+
+            var accessToken = HttpContext.Request.Cookies["AccessToken"];
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                return Unauthorized("Missing access token in cookie");
             }
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return Unauthorized("Missing access token");
+
             var questionIds = await _testQuestionService.GetQuestionIdsInTestIdAsync(testId);
-            var requestContent = new StringContent(
-                                JsonSerializer.Serialize(questionIds),
-                                Encoding.UTF8,
-                                "application/json");
-            var detailResponse = await _httpClient.PostAsync($"{_baseApiUrl}/Question/get-by-list/detail", requestContent);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseApiUrl}/Question/get-by-list/detail")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(questionIds), Encoding.UTF8, "application/json")
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Replace("Bearer ", ""));
+
+            var detailResponse = await _httpClient.SendAsync(request);
             if (!detailResponse.IsSuccessStatusCode)
                 return StatusCode((int)detailResponse.StatusCode, "Request Failed when fetching question details");
+
             var summaryJson = await detailResponse.Content.ReadAsStringAsync();
-            var listQuestionResponse = JsonSerializer.Deserialize<IEnumerable<QuestionDetailDto>>(summaryJson, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-            var result = await _testService.GetTestDetailAsync(testId,listQuestionResponse, questionIds);
+            var listQuestionResponse = JsonSerializer.Deserialize<IEnumerable<QuestionDetailDto>>(summaryJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? Enumerable.Empty<QuestionDetailDto>();
+
+            var result = await _testService.GetTestDetailAsync(testId, listQuestionResponse);
             return Ok(result);
         }
+
     }
 }

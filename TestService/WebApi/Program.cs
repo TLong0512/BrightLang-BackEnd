@@ -4,6 +4,7 @@ using Infrastructure.Contexts;
 using Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 using WebApi.Authentication;
 
@@ -13,6 +14,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestQuestionService, TesQuestionService>();
+builder.Services.AddScoped<ITestAnswerSevice, TestAnswerService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddHttpOnlyOrDefaultJwt(new TokenValidationParameters
@@ -40,11 +42,10 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

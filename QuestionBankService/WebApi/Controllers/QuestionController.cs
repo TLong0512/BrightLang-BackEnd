@@ -389,10 +389,6 @@ namespace WebApi.Controllers
         {
             try
             {
-                if (!listQuestionIds.Any())
-                {
-                    return BadRequest();
-                }
                 var result = await _questionService.GetAllQuestionSummaryByListIdAsync(listQuestionIds);
                 if (result == null)
                 {
@@ -420,10 +416,6 @@ namespace WebApi.Controllers
         {
             try
             {
-                if (!listQuestionIds.Any())
-                {
-                    return BadRequest();
-                }
                 var result = await _questionService.GetAllQuestionDetailByListIdAsync(listQuestionIds);
                 if (result == null)
                 {
