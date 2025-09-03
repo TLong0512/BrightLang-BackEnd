@@ -11,7 +11,7 @@ namespace Application.Services.Intefaces
     {
         public Task<IEnumerable<RangeViewDto>> GellAllRangeAsync();
         public Task<RangeViewDto> GetRangeByIdAsync(Guid id);
-        public Task<bool> AddRangeAsync(RangeAddDto RangeAddDto, Guid userId);
+        public Task AddRangeAsync(RangeAddDto RangeAddDto, Guid userId);
         public Task<RangeViewDto> UpdateRangeAsync(Guid id, RangeUpdateDto RangeUpdateDto, Guid userId);
         public Task<bool> DeleteRangeAsync(Guid id);
         public Task<IEnumerable<RangeViewDto>>GetRangesBySkillLevelIdAsync(Guid skillLevelId);

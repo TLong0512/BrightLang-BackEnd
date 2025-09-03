@@ -37,151 +37,31 @@ namespace Application.Services.Implementations
             _contextService = contextService;
             _rangeService = rangeService;
         }
-
         public async Task<Guid> AddQuestionAsync(QuestionAddDto questionAddDto, Guid userId)
         {
 
             var existingContext = await _unitOfWork.ContextRepository.GetContextById(questionAddDto.ContextId);
             if (existingContext == null)
             {
-                return Guid.Empty;
+                throw new ArgumentException("Context not found");
             }
-            else
+
+            if (questionAddDto.QuestionNumber < existingContext.Range.StartQuestionNumber
+                || questionAddDto.QuestionNumber > existingContext.Range.EndQuestionNumber)
             {
-                if (questionAddDto.QuestionNumber < existingContext.Range.StartQuestionNumber
-                    || questionAddDto.QuestionNumber > existingContext.Range.EndQuestionNumber)
-                {
-                    return Guid.Empty;
-                }
-
-                var context = await _unitOfWork.ContextRepository.GetContextById(questionAddDto.ContextId);
-                if (context.Questions.Select(x => x.QuestionNumber).Contains(questionAddDto.QuestionNumber))
-                {
-                    return Guid.Empty;
-                }
-
-                var newQuestion = _mapper.Map<Question>(questionAddDto);
-                await _unitOfWork.QuestionRepository.AddAsync(newQuestion, userId);
-                await _unitOfWork.SaveChangesAsync();
-                return newQuestion.Id;
+                throw new ArgumentOutOfRangeException("Question number out of range");
             }
-        }
 
-        public async Task<bool> DeleteQuestionAsync(Guid id)
-        {
-            var question = await _unitOfWork.QuestionRepository.GetByIdAsync(id);
-
-            if (question == null)
+            if (existingContext.Questions.Select(x => x.QuestionNumber).Contains(questionAddDto.QuestionNumber))
             {
-                return false;
+                throw new InvalidOperationException("Question is currently valid in its context");
             }
-            else
-            {
-                await _unitOfWork.QuestionRepository.Delete(question);
-                await _unitOfWork.SaveChangesAsync();
-                return true;
-            }
-        }
-        public async Task<PageResult<QuestionViewDto>> GellAllQuestionAsync(int page = 1, int pageSize = 10)
-        {
-            var result = _unitOfWork.QuestionRepository.GetAllQuestionsAsync();
 
-            var totalItems = await result.CountAsync();
+            var newQuestion = _mapper.Map<Question>(questionAddDto);
 
-            var listTests = await result.Skip((page - 1) * pageSize)
-                                       .Take(pageSize)
-                                       .ToListAsync();
-
-            var listResultDto = _mapper.Map<IEnumerable<QuestionViewDto>>(result);
-            return new PageResult<QuestionViewDto>
-            {
-                Page = page,
-                PageSize = pageSize,
-                TotalItems = totalItems,
-                Items = listResultDto
-            };
-        }
-        public async Task<IEnumerable<QuestionDetailDto>> GetAllQuestionDetailByListIdAsync(List<Guid> QuestionIds)
-        {
-            List<QuestionDetailDto> results = new List<QuestionDetailDto>();
-            foreach (var questionId in QuestionIds)
-            {
-                var questionDetail = await GetQuestionDetailByIdAsync(questionId);
-                results.Add(questionDetail);
-            }
-            return results;
-        }
-
-        public async Task<IEnumerable<QuestionSummaryDto>> GetAllQuestionSummaryByListIdAsync(List<Guid> QuestionIds)
-        {
-            List<QuestionSummaryDto> results = new List<QuestionSummaryDto>();
-            foreach (var questionId in QuestionIds)
-            {
-                var questionSummary = await GetQuestionSummaryByIdAsync(questionId);
-                results.Add(questionSummary);
-            }
-            return results;
-        }
-
-        public async Task<QuestionDetailDto> GetQuestionDetailByIdAsync(Guid id)
-        {
-            var question = await _unitOfWork.QuestionRepository.GetQuestionById(id);
-            var context = question.Context;
-            var range = await _unitOfWork.RangeRepository.GetByIdAsync(context.RangeId);
-            var skillLevel = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(range.SkillLevelId);
-            return new QuestionDetailDto
-            {
-                QuestionInformation = _mapper.Map<QuestionViewDto>(question),
-                AnswerDetails = _mapper.Map<List<AnswerViewDto>>(question.Answers),
-                ContextInformation = _mapper.Map<ContextViewDto>(context),
-                LevelName = skillLevel.Level.Name,
-                RangeName = range.Name,
-                SkillName = skillLevel.Skill.SkillName
-            };
-        }
-
-        public async Task<PageResult<QuestionViewDto>> GetQuestionsByRangeIdAsync(Guid rangeId, int page = 1, int pageSize = 10)
-        {
-            var listContextInRange = await _unitOfWork.ContextRepository.GetByConditionAsync(x => x.RangeId == rangeId);
-            var listContextIds = listContextInRange.Select(x => x.Id);
-
-            var questionsInContext = _unitOfWork.QuestionRepository.GetQuestionByConditionPaging(x => listContextIds.Contains(x.ContextId));
-
-            var totalItems = await questionsInContext.CountAsync();
-
-            questionsInContext = questionsInContext.OrderBy(x => x.QuestionNumber);
-
-            var listTests = await questionsInContext.Skip((page - 1) * pageSize)
-                                       .Take(pageSize)
-                                       .ToListAsync();
-
-            var result = _mapper.Map<IEnumerable<QuestionViewDto>>(listTests);
-
-            return new PageResult<QuestionViewDto>
-            {
-                Page = page,
-                PageSize = pageSize,
-                TotalItems = totalItems,
-                Items = result
-            };
-
-        }
-        public async Task<QuestionSummaryDto> GetQuestionSummaryByIdAsync(Guid id)
-        {
-            var question = await _unitOfWork.QuestionRepository.GetQuestionById(id);
-            var range = await _unitOfWork.RangeRepository.GetByIdAsync(question.Context.RangeId);
-            var skillLevel = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(range.SkillLevelId);
-
-            var answers = question.Answers;
-            var answerSummaryDto = _mapper.Map<List<AnswerSummaryDto>>(answers);
-            return new QuestionSummaryDto
-            {
-                QuestionNumber = question.QuestionNumber,
-                Content = question.Content,
-                AnswerContents = answerSummaryDto,
-                ContextContent = question.Context.Content,
-                SkillName = skillLevel.Skill.SkillName
-            };
+            await _unitOfWork.QuestionRepository.AddAsync(newQuestion, userId);
+            await _unitOfWork.SaveChangesAsync();
+            return newQuestion.Id;
         }
         public async Task<bool> QuickAddQuestion(Guid skillId, Guid examTypeId, IEnumerable<QuickQuestionAddDto> quickQuestionAddDtos, Guid userId)
         {
@@ -239,6 +119,119 @@ namespace Application.Services.Implementations
             }
             return true;
         }
+        public async Task<bool> DeleteQuestionAsync(Guid id)
+        {
+            var question = await _unitOfWork.QuestionRepository.GetByIdAsync(id);
+
+            if (question == null)
+            {
+                return false;
+            }
+            else
+            {
+                await _unitOfWork.QuestionRepository.Delete(question);
+                await _unitOfWork.SaveChangesAsync();
+                return true;
+            }
+        }
+        public async Task<PageResult<QuestionViewDto>> GellAllQuestionAsync(int page = 1, int pageSize = 10)
+        {
+            var result = _unitOfWork.QuestionRepository.GetAllQuestionsAsync();
+
+            var totalItems = await result.CountAsync();
+
+            var listTests = await result.Skip((page - 1) * pageSize)
+                                       .Take(pageSize)
+                                       .ToListAsync();
+
+            var listResultDto = _mapper.Map<IEnumerable<QuestionViewDto>>(result);
+            return new PageResult<QuestionViewDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                Items = listResultDto
+            };
+        }
+        public async Task<IEnumerable<QuestionDetailDto>> GetAllQuestionDetailByListIdAsync(List<Guid> QuestionIds)
+        {
+            List<QuestionDetailDto> results = new List<QuestionDetailDto>();
+            foreach (var questionId in QuestionIds)
+            {
+                var questionDetail = await GetQuestionDetailByIdAsync(questionId);
+                results.Add(questionDetail);
+            }
+            return results;
+        }
+        public async Task<IEnumerable<QuestionSummaryDto>> GetAllQuestionSummaryByListIdAsync(List<Guid> QuestionIds)
+        {
+            List<QuestionSummaryDto> results = new List<QuestionSummaryDto>();
+            foreach (var questionId in QuestionIds)
+            {
+                var questionSummary = await GetQuestionSummaryByIdAsync(questionId);
+                results.Add(questionSummary);
+            }
+            return results;
+        }
+        public async Task<QuestionDetailDto> GetQuestionDetailByIdAsync(Guid id)
+        {
+            var question = await _unitOfWork.QuestionRepository.GetQuestionById(id);
+            var context = question.Context;
+            var range = await _unitOfWork.RangeRepository.GetByIdAsync(context.RangeId);
+            var skillLevel = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(range.SkillLevelId);
+            return new QuestionDetailDto
+            {
+                QuestionInformation = _mapper.Map<QuestionViewDto>(question),
+                AnswerDetails = _mapper.Map<List<AnswerViewDto>>(question.Answers),
+                ContextInformation = _mapper.Map<ContextViewDto>(context),
+                LevelName = skillLevel.Level.Name,
+                RangeName = range.Name,
+                SkillName = skillLevel.Skill.SkillName
+            };
+        }
+        public async Task<PageResult<QuestionViewDto>> GetQuestionsByRangeIdAsync(Guid rangeId, int page = 1, int pageSize = 10)
+        {
+            var listContextInRange = await _unitOfWork.ContextRepository.GetByConditionAsync(x => x.RangeId == rangeId);
+            var listContextIds = listContextInRange.Select(x => x.Id);
+
+            var questionsInContext = _unitOfWork.QuestionRepository.GetQuestionByConditionPaging(x => listContextIds.Contains(x.ContextId));
+
+            var totalItems = await questionsInContext.CountAsync();
+
+            questionsInContext = questionsInContext.OrderBy(x => x.QuestionNumber);
+
+            var listTests = await questionsInContext.Skip((page - 1) * pageSize)
+                                       .Take(pageSize)
+                                       .ToListAsync();
+
+            var result = _mapper.Map<IEnumerable<QuestionViewDto>>(listTests);
+
+            return new PageResult<QuestionViewDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                Items = result
+            };
+
+        }
+        public async Task<QuestionSummaryDto> GetQuestionSummaryByIdAsync(Guid id)
+        {
+            var question = await _unitOfWork.QuestionRepository.GetQuestionById(id);
+            var range = await _unitOfWork.RangeRepository.GetByIdAsync(question.Context.RangeId);
+            var skillLevel = await _unitOfWork.SkillLevelRepository.GetSkillLevelById(range.SkillLevelId);
+
+            var answers = question.Answers;
+            var answerSummaryDto = _mapper.Map<List<AnswerSummaryDto>>(answers);
+            return new QuestionSummaryDto
+            {
+                QuestionNumber = question.QuestionNumber,
+                Content = question.Content,
+                AnswerContents = answerSummaryDto,
+                ContextContent = question.Context.Content,
+                SkillName = skillLevel.Skill.SkillName
+            };
+        }
         public async Task<QuestionViewDto> UpdateQuestionAsync(Guid id, QuestionUpdateDto questionUpdateDto, Guid userId)
         {
             var question = await _unitOfWork.QuestionRepository.GetQuestionById(id);
@@ -255,7 +248,6 @@ namespace Application.Services.Implementations
                 question.Content = updatedQuestion.Content;
                 question.Explain = updatedQuestion.Explain;
                 await _unitOfWork.QuestionRepository.Update(question, userId);
-                await _unitOfWork.SaveChangesAsync();
 
                 // update context
                 var context = question.Context;
@@ -264,23 +256,21 @@ namespace Application.Services.Implementations
                 context.Explain = updatedContext.Content;
                 context.IsBelongTest = updatedContext.IsBelongTest;
                 await _unitOfWork.ContextRepository.Update(context, userId);
-                await _unitOfWork.SaveChangesAsync();
 
                 // update list answer
-                foreach(var answer in question.Answers)
+                foreach (var answer in question.Answers)
                 {
                     await _unitOfWork.AnswerRepository.Delete(answer);
-                    await _unitOfWork.SaveChangesAsync();
                 }
-                
-                foreach(var answerUpdateDto in questionUpdateDto.ListAnswers)
+
+                foreach (var answerUpdateDto in questionUpdateDto.ListAnswers)
                 {
                     var updateAnswer = _mapper.Map<Answer>(answerUpdateDto);
                     updateAnswer.QuestionId = question.Id;
                     await _unitOfWork.AnswerRepository.AddAsync(updateAnswer, userId);
-                    await _unitOfWork.SaveChangesAsync();
                 }
 
+                await _unitOfWork.SaveChangesAsync();
                 return _mapper.Map<QuestionViewDto>(question);
             }
         }
@@ -377,6 +367,5 @@ namespace Application.Services.Implementations
             }
             return listGenQuestionResult;
         }
-
     }
 }

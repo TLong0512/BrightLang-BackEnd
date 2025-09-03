@@ -62,7 +62,11 @@ namespace WebApi.Controllers
                 Guid userId = Guid.Parse(userIdClaim);
 
                 await _examTypeService.AddExamTypeAsync(examTypeAddDto, userId);
-                return Ok("Add successfully");
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {
@@ -119,14 +123,11 @@ namespace WebApi.Controllers
                 Guid userId = Guid.Parse(userIdClaim);
 
                 var result = await _examTypeService.UpdateExamTypeAsync(id, examTypeUpdateDto, userId);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(result);
-                }
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {
