@@ -97,7 +97,7 @@ namespace WebApi.Controllers
                 {
                     return BadRequest();
                 }
-                return Ok("Add successfully");
+                return Ok(new {Message = "Add successfully" });
             }
             catch (ArgumentException ex)
             {

@@ -56,13 +56,9 @@ namespace WebApi.Controllers
             {
                 if (skillLevelId == Guid.Empty)
                 {
-                    return BadRequest("Invalid parametters");
+                    return BadRequest("Invalid parametter");
                 }
                 var result = await _rangeService.GetRangesBySkillLevelIdAsync(skillLevelId);
-                if (result == null)
-                {
-                    return NotFound("No result found");
-                }
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -80,12 +76,14 @@ namespace WebApi.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AddRange([FromBody] RangeAddDto RangeAddDto)
+        public async Task<IActionResult> AddRange([FromBody] RangeAddDto rangeAddDto)
         {
             try
             {
-                if (RangeAddDto == null)
-                { return BadRequest("Invalid data"); }
+                if (rangeAddDto == null)
+                {
+                    return BadRequest("Invalid data");
+                }
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userIdClaim))
@@ -93,16 +91,21 @@ namespace WebApi.Controllers
 
                 Guid userId = Guid.Parse(userIdClaim);
 
-                var result = await _rangeService.AddRangeAsync(RangeAddDto, userId);
-                if (result == false)
-                {
-                    return BadRequest();
-                }
-                return Ok("Add successfully");
+                await _rangeService.AddRangeAsync(rangeAddDto, userId);
+
+                return Ok(new { Message = "Add successfully" });
+            }
+            catch(InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (UnauthorizedAccessException)
             {
@@ -123,11 +126,11 @@ namespace WebApi.Controllers
                     return BadRequest("Invalid parametters");
                 }
                 var result = await _rangeService.GetRangeByIdAsync(id);
-                if (result == null)
-                {
-                    return NotFound("No result found");
-                }
                 return Ok(result);
+            }
+            catch(KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (ArgumentException ex)
             {
@@ -154,14 +157,13 @@ namespace WebApi.Controllers
 
                 Guid userId = Guid.Parse(userIdClaim);
                 var result = await _rangeService.UpdateRangeAsync(id, RangeUpdateDto, userId);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
+
                     return Ok(result);
-                }
+                
+            }
+            catch(KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (ArgumentException ex)
             {
@@ -204,6 +206,5 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
     }
 }

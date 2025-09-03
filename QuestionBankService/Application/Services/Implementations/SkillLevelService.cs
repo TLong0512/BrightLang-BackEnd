@@ -22,7 +22,7 @@ namespace Application.Services.Implementations
             this._mapper = mapper;
         }
 
-        public async Task<bool> AddSkillLevelAsync(SkillLevelAddDto skillLevelAddDto, Guid userId)
+        public async Task AddSkillLevelAsync(SkillLevelAddDto skillLevelAddDto, Guid userId)
         {
 
             var existingLevel = await _unitOfWork.LevelRepository.GetByIdAsync(skillLevelAddDto.LevelId);
@@ -30,14 +30,13 @@ namespace Application.Services.Implementations
 
             if (existingLevel == null || existingSkill == null)
             {
-                return false;
+                throw new ArgumentException("Not found skill or level");
             }
             else
             {
                 var newSkillLevel = _mapper.Map<SkillLevel>(skillLevelAddDto);
                 await _unitOfWork.SkillLevelRepository.AddAsync(newSkillLevel, userId);
                 await _unitOfWork.SaveChangesAsync();
-                return true;
             }
         }
 

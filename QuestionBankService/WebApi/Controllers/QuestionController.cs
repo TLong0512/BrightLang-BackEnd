@@ -24,7 +24,6 @@ namespace WebApi.Controllers
             _questionService = QuestionService;
             _mapper = mapper;
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAllQuestion(int page = 1, int pageSize = 10)
         {
@@ -62,6 +61,10 @@ namespace WebApi.Controllers
                 }
                 var result = await _questionService.GenerateQuestionByRangeIdAsync(rangeId);
                 return Ok(result);
+            }
+            catch(KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (ArgumentException ex)
             {
@@ -112,10 +115,10 @@ namespace WebApi.Controllers
         {
             try
             {
-                if(levelId == Guid.Empty)
+                if (levelId == Guid.Empty)
                 {
                     return BadRequest();
-                }    
+                }
                 var result = await _questionService.GenerateQuestionByLevelIdAsync(levelId, numberPerSkillLevel);
                 if (result == null)
                 {
@@ -225,27 +228,34 @@ namespace WebApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddQuestion([FromBody] QuestionAddDto QuestionAddDto)
         {
+
+            if (!ModelState.IsValid)
+            { return BadRequest(ModelState); }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("UserId not found in token");
+
+            Guid userId = Guid.Parse(userIdClaim);
+
             try
             {
-                if (QuestionAddDto == null)
-                { return BadRequest("Invalid data"); }
-
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim))
-                    return Unauthorized("UserId not found in token");
-
-                Guid userId = Guid.Parse(userIdClaim);
-
                 var result = await _questionService.AddQuestionAsync(QuestionAddDto, userId);
-                if (result == Guid.Empty)
-                {
-                    return BadRequest();
-                }
+
                 return Ok(result);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch(InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+
             }
             catch (UnauthorizedAccessException)
             {
@@ -258,7 +268,7 @@ namespace WebApi.Controllers
         }
         [HttpPost("quick-add/skill/{skillId}/exam-type/{examTypeId}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> QuickAddQuestion(Guid skillId, Guid examTypeId,  [FromBody] List<QuickQuestionAddDto> quickQuestionAddDto)
+        public async Task<IActionResult> QuickAddQuestion(Guid skillId, Guid examTypeId, [FromBody] List<QuickQuestionAddDto> quickQuestionAddDto)
         {
             try
             {
@@ -271,12 +281,12 @@ namespace WebApi.Controllers
 
                 Guid userId = Guid.Parse(userIdClaim);
 
-                var result = await _questionService.QuickAddQuestion(skillId, examTypeId,quickQuestionAddDto, userId);
+                var result = await _questionService.QuickAddQuestion(skillId, examTypeId, quickQuestionAddDto, userId);
                 if (result == false)
                 {
                     return BadRequest();
                 }
-                return Ok("Added sucessfully");
+                return Ok(new {Message = "Added sucessfully" });
             }
             catch (ArgumentException ex)
             {
@@ -386,7 +396,7 @@ namespace WebApi.Controllers
 
         [HttpPost("get-by-list/summary")]
         [Authorize]
-        public async Task<IActionResult> GetListSummaryQuestions([FromBody]List<Guid> listQuestionIds)
+        public async Task<IActionResult> GetListSummaryQuestions([FromBody] List<Guid> listQuestionIds)
         {
             try
             {
@@ -413,7 +423,7 @@ namespace WebApi.Controllers
 
         [HttpPost("get-by-list/detail")]
         [Authorize]
-        public async Task<IActionResult> GetListDetailQuestions([FromBody]List<Guid> listQuestionIds)
+        public async Task<IActionResult> GetListDetailQuestions([FromBody] List<Guid> listQuestionIds)
         {
             try
             {

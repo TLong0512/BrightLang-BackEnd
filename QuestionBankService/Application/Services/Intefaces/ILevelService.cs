@@ -14,5 +14,6 @@ namespace Application.Services.Intefaces
         public Task<bool> AddLevelAsync(LevelAddDto LevelAddDto, Guid userId);
         public Task<LevelViewDto> UpdateLevelAsync(Guid id, LevelUpdateDto LevelUpdateDto, Guid userId);
         public Task<bool> DeleteLevelAsync(Guid id);
+        public Task<IEnumerable<LevelViewDto>> GetLevelByExamTypeId(Guid examTypeId);
     }
 }
