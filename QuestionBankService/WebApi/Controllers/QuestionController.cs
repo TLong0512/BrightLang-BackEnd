@@ -24,7 +24,7 @@ namespace WebApi.Controllers
             _questionService = QuestionService;
             _mapper = mapper;
         }
-        [HttpGet]
+        [HttpGet("{page}/{pageSize}")]
         public async Task<IActionResult> GetAllQuestion(int page = 1, int pageSize = 10)
         {
             try
@@ -194,7 +194,7 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("filter/context/{contextId}")]
+        [HttpGet("filter/context/{contextId}/{page}/{pageSize}")]
         [Authorize]
         public async Task<IActionResult> GetQuestionByContextId(Guid contextId, int page = 1, int pageSize = 10)
         {

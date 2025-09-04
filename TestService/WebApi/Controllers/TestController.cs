@@ -63,7 +63,7 @@ namespace WebApi.Controllers
             await _testService.SubmitAnswerInATest(Guid.NewGuid(), testId, submitTestRequestDto.listAnswerIds, submitTestRequestDto.listTrueAnswerIds);
             return Ok(("Result has been saved"));
         }
-        [HttpGet("user-test/all")]
+        [HttpGet("user-test/all/{page}/{pageSize}")]
         [Authorize]
         public async Task<IActionResult> GetAllTestAsync(int page = 1, int pageSize = 10)
         {
