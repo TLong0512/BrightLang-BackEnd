@@ -152,46 +152,6 @@ services:
     networks: [question-bank-network, main-network]
 
 
-  roadmap-db:
-    image: mcr.microsoft.com/mssql/server:latest
-    container_name: roadmap-db
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SA_PASSWORD:-Str0ng!Passw0rd}
-    # ports: ["6004:1433"] # debug
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$SA_PASSWORD -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 25
-      # I have adjusted this value, considering some old machine would take a lot of time for a db container 
-       # to start up. if 25 * 10 = 250s is not enough, consider buying new computer.
-    networks: [roadmap-network]
-    # Nếu máy Mac Apple Silicon bị lỗi, bỏ comment 2 dòng dưới:
-    # platform: linux/amd64
-    # deploy: { }
-
-  roadmap-service:
-    build:
-      context: ./RoadmapService
-      dockerfile: Dockerfile # redundant, only for explicitness.
-      args:
-        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
-    container_name: roadmap-service
-    environment:
-      - ASPNETCORE_URLS=http://+:8080
-      
-      - ServiceUrls__Users=http://user-service:8080
-      - ServiceUrls__Vocabulary=http://vocabulary-service:8080
-      - ServiceUrls__QuestionBank=http://question-bank-service:8080
-      - ServiceUrls__Roadmap=http://roadmap-service:8080
-      - ServiceUrls__Test=http://test-service:8080
-
-      - ConnectionStrings__DefaultConnection=Server=roadmap-db,1433;Database=RoadmapDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
-      
-      # - Email__Username=${EMAIL__USERNAME} # TODO: remove if unused
-      # - Email__Password=${EMAIL__PASSWORD} # TODO: remove if unused
-
 
   roadmap-db:
     image: mcr.microsoft.com/mssql/server:latest
