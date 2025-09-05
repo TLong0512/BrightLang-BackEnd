@@ -1,36 +1,33 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ocelot.Values;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Ocelot config (with Routes + SwaggerEndpoints)
+// Load Ocelot config
 builder.Configuration
     .AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-// AddOcelot depends on this
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Register Ocelot services
+// Register Ocelot + SwaggerForOcelot
 builder.Services.AddOcelot(builder.Configuration);
 
-// Register SwaggerForOcelot services
+builder.Services.AddEndpointsApiExplorer();
+
+// ✅ Register Swashbuckle services (required by SwaggerForOcelot)
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddSwaggerForOcelot(builder.Configuration);
 
 var app = builder.Build();
 
-
+// Expose aggregated Swagger UI
 //if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerForOcelotUI();
 }
 
-// Use Swagger UI aggregated by Ocelot
-app.UseSwaggerForOcelotUI();
-
-// Use Ocelot middleware
+// Run Ocelot middleware
 await app.UseOcelot();
 
 app.Run();
