@@ -92,12 +92,8 @@ namespace WebApi.Controllers
 
                 Guid userId = Guid.Parse(userIdClaim);
 
-                var result = await _skillLevelService.AddSkillLevelAsync(SkillLevelAddDto, userId);
-                if(result == false)
-                {
-                    return BadRequest();
-                }
-                return Ok("Add successfully");
+                await _skillLevelService.AddSkillLevelAsync(SkillLevelAddDto, userId);
+                return Ok(new {Message = "Add successfully"});
             }
             catch (ArgumentException ex)
             {
@@ -204,6 +200,6 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-   
+
     }
 }

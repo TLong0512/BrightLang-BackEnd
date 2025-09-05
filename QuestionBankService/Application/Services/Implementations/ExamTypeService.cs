@@ -22,8 +22,13 @@ namespace Application.Services.Implementations
             this._mapper = mapper;
         }
 
-        public async Task AddExamTypeAsync(ExamTypeAddDto examTypeAddDto, Guid userId   )
+        public async Task AddExamTypeAsync(ExamTypeAddDto examTypeAddDto, Guid userId)
         {
+            var existingExamType = _unitOfWork.ExamTypeRepository.GetByConditionAsync(x => x.Name == examTypeAddDto.Name);
+            if(existingExamType == null)
+            {
+                throw new InvalidOperationException("Exam type has already in db");
+            }
             var newExamType = _mapper.Map<ExamType>(examTypeAddDto);
             await _unitOfWork.ExamTypeRepository.AddAsync(newExamType,userId);
             await _unitOfWork.SaveChangesAsync();
@@ -64,7 +69,7 @@ namespace Application.Services.Implementations
 
             if (examType == null)
             {
-                return null;
+                throw new KeyNotFoundException("Not found exam type");
             }
             else
             {

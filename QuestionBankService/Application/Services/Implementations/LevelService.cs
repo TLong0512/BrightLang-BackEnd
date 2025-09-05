@@ -1,4 +1,5 @@
-﻿using Application.Dtos.LevelDtos;
+﻿using Application.Dtos.ExamTypeDtos;
+using Application.Dtos.LevelDtos;
 using Application.Services.Intefaces;
 using AutoMapper;
 using Domain.Entities;
@@ -24,14 +25,19 @@ namespace Application.Services.Implementations
 
         public async Task<bool> AddLevelAsync(LevelAddDto levelAddDto, Guid userId)
         {
-           
-            var existingExamtype = await _unitOfWork.ExamTypeRepository.GetByIdAsync(levelAddDto.ExamTypeId);
-            if(existingExamtype == null)
+
+            var existingLevel = await _unitOfWork.ExamTypeRepository.GetByIdAsync(levelAddDto.ExamTypeId);
+            if (existingLevel == null)
             {
                 return false;
             }
             else
             {
+                var existingExamType = _unitOfWork.LevelRepository.GetByConditionAsync(x => x.Name == levelAddDto.Name);
+                if (existingExamType == null)
+                {
+                    throw new InvalidOperationException("Level has already in db");
+                }
                 var newLevel = _mapper.Map<Level>(levelAddDto);
                 await _unitOfWork.LevelRepository.AddAsync(newLevel, userId);
                 await _unitOfWork.SaveChangesAsync();
@@ -63,6 +69,17 @@ namespace Application.Services.Implementations
             return orderedListResultDto;
         }
 
+        public async Task<IEnumerable<LevelViewDto>> GetLevelByExamTypeId(Guid examTypeId)
+        {
+            var levels = await _unitOfWork.LevelRepository.GetByConditionAsync(x => x.ExamTypeId == examTypeId);
+
+            if (levels == null || !levels.Any())
+            {
+                return Enumerable.Empty<LevelViewDto>();
+            }
+            return _mapper.Map<IEnumerable<LevelViewDto>>(levels);
+        }
+
         public async Task<LevelViewDto> GetLevelByIdAsync(Guid id)
         {
             var result = await _unitOfWork.LevelRepository.GetLevelByIdAsync(id);
@@ -74,26 +91,15 @@ namespace Application.Services.Implementations
             var level = await _unitOfWork.LevelRepository.GetLevelByIdAsync(id);
             if (level == null)
             {
-                return null;
+                throw new KeyNotFoundException("Not found level");
             }
-            else
-            {
-                
-                var existingExamtype = await _unitOfWork.ExamTypeRepository.GetByIdAsync(levelUpdateDto.ExamTypeId);
-                if (existingExamtype == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    var updatedLevel = _mapper.Map<Level>(levelUpdateDto);
-                    level.ExamTypeId = updatedLevel.ExamTypeId;
-                    level.Name = updatedLevel.Name;
-                    await _unitOfWork.LevelRepository.Update(level, userId);
-                    await _unitOfWork.SaveChangesAsync();
-                    return _mapper.Map<LevelViewDto>(level);
-                }
-            }
+            var updatedLevel = _mapper.Map<Level>(levelUpdateDto);
+            level.ExamTypeId = updatedLevel.ExamTypeId;
+            level.Name = updatedLevel.Name;
+            await _unitOfWork.LevelRepository.Update(level, userId);
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<LevelViewDto>(level);
+
         }
     }
 }

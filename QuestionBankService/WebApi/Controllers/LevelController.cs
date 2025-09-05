@@ -46,6 +46,31 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("filter/exam-type/{examTypeId}")]
+        public async Task<IActionResult> GetAllLevelsByExamTypeIds(Guid examTypeId)
+        {
+            try
+            {
+                if (examTypeId == Guid.Empty)
+                {
+                    return BadRequest("Invalid exam type id.");
+                }
+                var result = await _levelService.GetLevelByExamTypeId(examTypeId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddLevel([FromBody] LevelAddDto LevelAddDto)
@@ -66,7 +91,11 @@ namespace WebApi.Controllers
                 {
                     return BadRequest();
                 }
-                return Ok("Add successfully");
+                return Ok(new {Message = "Add successfully" });
+            }
+            catch(InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (ArgumentException ex)
             {

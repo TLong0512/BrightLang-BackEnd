@@ -1,10 +1,6 @@
-using Application.Services.Implementations;
-using Application.Services.Interfaces;
-using Infrastructure.Contexts;
-using Infrastructure.UnitOfWorks;
-using Microsoft.EntityFrameworkCore;
+using Application.Services.Implementation;
+using Application.Services.Interface;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Text;
 using WebApi.Authentication;
 
@@ -16,17 +12,14 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
     });
 });
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
-builder.Services.AddScoped<ITestService, TestService>();
-builder.Services.AddScoped<ITestQuestionService, TesQuestionService>();
-builder.Services.AddScoped<ITestAnswerSevice, TestAnswerService>();
+// Add services to the container.
+builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpOnlyOrDefaultJwt(new TokenValidationParameters
 {
@@ -39,26 +32,25 @@ builder.Services.AddHttpOnlyOrDefaultJwt(new TokenValidationParameters
     ValidAudience = builder.Configuration["JwtSettings:Audience"],
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!))
 });
-builder.Services.AddAuthorization();
-
-// Add services to the container.
-builder.Services.AddDbContext<DefaultContext>(ops => ops.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-app.UseSwagger();
-app.UseSwaggerUI();
+app.UseCors("AllowAngular");
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
