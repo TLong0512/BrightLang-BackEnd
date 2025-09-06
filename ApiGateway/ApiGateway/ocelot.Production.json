@@ -1,0 +1,369 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/Authentication/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Authentication/{everything}",
+      "SwaggerKey": "UserService_Authentication"
+    },
+    {
+      "DownstreamPathTemplate": "/api/my-account/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/my-account/{everything}",
+      "SwaggerKey": "UserService_my-account"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Users/{everything}",
+      "SwaggerKey": "UserService_Users"
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/Book/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vocabulary-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Book/{everything}",
+      "SwaggerKey": "VocabularyService_Book"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Vocabulary/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vocabulary-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Vocabulary/{everything}",
+      "SwaggerKey": "VocabularyService_Vocabulary"
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/Answer/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Answer/{everything}",
+      "SwaggerKey": "QuestionBankService_Answer"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Context/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Context/{everything}",
+      "SwaggerKey": "QuestionBankService_Context"
+    },
+    {
+      "DownstreamPathTemplate": "/api/ExamType/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/ExamType/{everything}",
+      "SwaggerKey": "QuestionBankService_ExamType"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Level/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Level/{everything}",
+      "SwaggerKey": "QuestionBankService_Level"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Question/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Question/{everything}",
+      "SwaggerKey": "QuestionBankService_Question"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Range/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Range/{everything}",
+      "SwaggerKey": "QuestionBankService_Range"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Skill/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Skill/{everything}",
+      "SwaggerKey": "QuestionBankService_Skill"
+    },
+    {
+      "DownstreamPathTemplate": "/api/SkillLevel/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "question-bank-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/SkillLevel/{everything}",
+      "SwaggerKey": "QuestionBankService_SkillLevel"
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/RoadmapElementRanges/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "roadmap-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/RoadmapElementRanges/{everything}",
+      "SwaggerKey": "RoadmapService_RoadmapElementRanges"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Roadmaps/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "roadmap-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Roadmaps/{everything}",
+      "SwaggerKey": "RoadmapService_Roadmaps"
+    },
+    {
+      "DownstreamPathTemplate": "/api/UserRoadmaps/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "roadmap-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/UserRoadmaps/{everything}",
+      "SwaggerKey": "RoadmapService_UserRoadmaps"
+    }
+
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "UserService_Authentication",
+      "Config": [
+        {
+          "Name": "UserService - Authentication API",
+          "Version": "v1",
+          "Url": "http://user-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "UserService_my-account",
+      "Config": [
+        {
+          "Name": "UserService - My Account API",
+          "Version": "v1",
+          "Url": "http://user-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "UserService_Users",
+      "Config": [
+        {
+          "Name": "UserService - Users API",
+          "Version": "v1",
+          "Url": "http://user-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+
+    {
+      "Key": "VocabularyService_Book",
+      "Config": [
+        {
+          "Name": "Vocabulary Service - Book API",
+          "Version": "v1",
+          "Url": "http://vocabulary-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "VocabularyService_Vocabulary",
+      "Config": [
+        {
+          "Name": "Vocabulary Service - Vocabulary API",
+          "Version": "v1",
+          "Url": "http://vocabulary-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+
+    {
+      "Key": "QuestionBankService_Answer",
+      "Config": [
+        {
+          "Name": "Question Bank Service - Answer API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "QuestionBankService_Context",
+      "Config": [
+        {
+          "Name": "Question Bank Service - Context API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "QuestionBankService_ExamType",
+      "Config": [
+        {
+          "Name": "Question Bank Service - Exam Type API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "QuestionBankService_Level",
+      "Config": [
+        {
+          "Name": "Question Bank Service - Level API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "QuestionBankService_Question",
+      "Config": [
+        {
+          "Name": "Question Bank Service - Question API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "QuestionBankService_Range",
+      "Config": [
+        {
+          "Name": "Question Bank Service - Range API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "QuestionBankService_Skill",
+      "Config": [
+        {
+          "Name": "Question Bank Service - Skill API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "QuestionBankService_SkillLevel",
+      "Config": [
+        {
+          "Name": "Question Bank Service - SkillLevel API",
+          "Version": "v1",
+          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+
+    {
+      "Key": "RoadmapService_RoadmapElementRanges",
+      "Config": [
+        {
+          "Name": "Roadmap Service - Roadmap Element Ranges API",
+          "Version": "v1",
+          "Url": "http://roadmap-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "RoadmapService_Roadmaps",
+      "Config": [
+        {
+          "Name": "Roadmap Service - Roadmaps API",
+          "Version": "v1",
+          "Url": "http://roadmap-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "RoadmapService_UserRoadmaps",
+      "Config": [
+        {
+          "Name": "Roadmap Service - User Roadmaps API",
+          "Version": "v1",
+          "Url": "http://roadmap-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    }
+
+  ],
+   "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:8080"
+  }
+}

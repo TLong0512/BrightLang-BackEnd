@@ -18,13 +18,12 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
 builder.Services.AddHttpContextAccessor();
-
-// do i need to tell the app that it needs to load env varaibles? i set the env variables in the .env file (Docker)
 
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddControllers();
