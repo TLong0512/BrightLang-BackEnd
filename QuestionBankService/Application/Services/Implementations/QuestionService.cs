@@ -65,59 +65,73 @@ namespace Application.Services.Implementations
         }
         public async Task<bool> QuickAddQuestion(Guid skillId, Guid examTypeId, IEnumerable<QuickQuestionAddDto> quickQuestionAddDtos, Guid userId)
         {
-            var listRangeDto = await _rangeService.GetAllRangeIdByExamTypeAndSkill(examTypeId, skillId);
-
-            foreach (var question in quickQuestionAddDtos)
+            await _unitOfWork.BeginTransactionAsync();
+            try
             {
-                // check question belong to which range
-                var existingRange = listRangeDto.FirstOrDefault(x => x.StartQuestionNumber <= question.QuestionNumber
-                                                        && x.EndQuestionNumber >= question.QuestionNumber);
-                //move to next question if it has wrong question number
-                if (existingRange == null)
-                    continue;
-                //check context of question
-                var listContexts = await _unitOfWork.ContextRepository.GetContextByCondition(x => x.RangeId == existingRange.Id);
-                var existContext = listContexts.FirstOrDefault(x => x.Content != "" && x.Content == question.Context.Content);
-                //if content of context is "" or not exist in db => create new context
-                if (existContext == null)
-                {
-                    var contextAddDto = new ContextAddDto
-                    {
-                        RangeId = existingRange.Id,
-                        Content = question.Context.Content,
-                        Explain = question.Context.Explain,
-                        IsBelongTest = question.Context.IsBelongTest
-                    };
-                    var newContextId = await _contextService.AddContextAsync(contextAddDto, userId);
-                    existContext = await _unitOfWork.ContextRepository.GetContextById(newContextId);
-                }
-                //check question number in question is exist in context
-                var questionNumberInContext = existContext.Questions.Select(x => x.QuestionNumber);
-                if (questionNumberInContext.Contains(question.QuestionNumber))
-                    continue;
-                var questionAddDto = new QuestionAddDto
-                {
-                    ContextId = existContext.Id,
-                    Content = question.Content,
-                    Explain = question.Explain,
-                    QuestionNumber = question.QuestionNumber
-                };
-                var newQuestionAddId = await AddQuestionAsync(questionAddDto, userId);
+                var listRangeDto = await _rangeService.GetAllRangeIdByExamTypeAndSkill(examTypeId, skillId);
 
-                foreach (var answer in question.AnswerList)
+                foreach (var question in quickQuestionAddDtos)
                 {
-                    var answerAddDto = new AnswerAddDto
+                    // check question belong to which range
+                    var existingRange = listRangeDto.FirstOrDefault(x => x.StartQuestionNumber <= question.QuestionNumber
+                                                            && x.EndQuestionNumber >= question.QuestionNumber);
+                    //move to next question if it has wrong question number
+                    if (existingRange == null)
+                        throw new ArgumentException("a question has wrong number");
+                    //check context of question
+                    var listContexts = await _unitOfWork.ContextRepository.GetContextByCondition(x => x.RangeId == existingRange.Id);
+                    var existContext = listContexts.FirstOrDefault(x => x.Content != "" && x.Content == question.Context.Content);
+                    //if content of context is "" or not exist in db => create new context
+                    if (existContext == null)
                     {
-                        QuestionId = newQuestionAddId,
-                        Value = answer.Value,
-                        Explain = answer.Explain,
-                        IsCorrect = answer.IsCorrect
-                    };
-                    await _answerService.AddAnswerAsync(answerAddDto, userId);
-                }
+                        var newContext = new Context
+                        {
+                            RangeId = existingRange.Id,
+                            Content = question.Context.Content,
+                            Explain = question.Context.Explain,
+                            IsBelongTest = question.Context.IsBelongTest
+                        };
+                        await _unitOfWork.ContextRepository.AddAsync(newContext, userId);
+                        existContext = newContext;
+                    }
+                    //check question number in question is exist in context
+                    var listQuestionInContext = await _unitOfWork.QuestionRepository.GetByConditionAsync(x => x.ContextId == existContext.Id);
+                    var listNumberInContext = listQuestionInContext.Select(x => x.QuestionNumber);
+                    if (listNumberInContext.Any() && listNumberInContext.Contains(question.QuestionNumber))
+                        throw new ArgumentException($"question {question.QuestionNumber} has been created in {existContext.Content}, check again");
 
+                    var newQuestion = new Question
+                    {
+                        ContextId = existContext.Id,
+                        Content = question.Content,
+                        Explain = question.Explain,
+                        QuestionNumber = question.QuestionNumber
+                    };
+
+                    await _unitOfWork.QuestionRepository.AddAsync(newQuestion, userId);
+
+                    foreach (var answer in question.AnswerList)
+                    {
+                        var addAnswer = new Answer
+                        {
+                            QuestionId = newQuestion.Id,
+                            Value = answer.Value,
+                            Explain = answer.Explain,
+                            IsCorrect = answer.IsCorrect
+                        };
+                        await _unitOfWork.AnswerRepository.AddAsync(addAnswer, userId);
+                    }
+                }
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return true;
             }
-            return true;
+            catch
+            {
+                await _unitOfWork.RollBackTransactionAsync();
+                throw;
+            }
+
         }
         public async Task<bool> DeleteQuestionAsync(Guid id)
         {

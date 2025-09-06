@@ -20,6 +20,14 @@ namespace Application.Services.Implementations
             _mapper = mapper;
         }
 
+        public async Task AddTestAnswerAsync(Guid testId, IEnumerable<Guid> testAnswers, Guid userId)
+        {
+            foreach (var item in testAnswers)
+            {
+                await _unitOfWork.TestAnswerRepository.AddAsync(new TestAnswer { AnswerId = item, TestId = testId }, userId);
+            }
+        }
+
         public async Task<IEnumerable<Guid>> GetAnswerIdsInTestIdAsync(Guid testId)
         {
             var testQuestions = await _unitOfWork.TestAnswerRepository.GetByConditionAsync(x => x.TestId == testId);
