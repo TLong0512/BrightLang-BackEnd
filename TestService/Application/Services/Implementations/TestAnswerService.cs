@@ -22,9 +22,13 @@ namespace Application.Services.Implementations
 
         public async Task AddTestAnswerAsync(Guid testId, IEnumerable<Guid> testAnswers, Guid userId)
         {
+            await _unitOfWork.TestAnswerRepository.DeleteByCondition(x => x.TestId == testId);
+            await _unitOfWork.SaveChangesAsync();
+
             foreach (var item in testAnswers)
             {
                 await _unitOfWork.TestAnswerRepository.AddAsync(new TestAnswer { AnswerId = item, TestId = testId }, userId);
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
