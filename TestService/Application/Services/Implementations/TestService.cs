@@ -45,7 +45,6 @@ namespace Application.Services.Implementations
                 await _unitOfWork.TestQuestionRepository.AddAsync(testQuestion, userId);
                 await _unitOfWork.SaveChangesAsync();
             }
-
             return test.Id;
         }
         
@@ -89,9 +88,10 @@ namespace Application.Services.Implementations
                 await _unitOfWork.TestAnswerRepository.AddAsync(testAnswer, userId);
                 await _unitOfWork.SaveChangesAsync();
             }
+
             var test = await _unitOfWork.TestRepository.GetByIdAsync(testId);
             int cnt = listAnswerIds.Count(x => listAnswerIds.Contains(x));
-            test.Score = cnt;
+            test.Score = cnt != 0 ? cnt : 0;
             await _unitOfWork.TestRepository.Update(test, userId);
             await _unitOfWork.SaveChangesAsync();
         }
