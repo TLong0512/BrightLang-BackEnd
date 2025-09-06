@@ -9,5 +9,6 @@ namespace Application.Services.Interfaces
     public interface ITestAnswerSevice
     {
         public Task<IEnumerable<Guid>> GetAnswerIdsInTestIdAsync(Guid testId);
+        public Task AddTestAnswerAsync(Guid testId, IEnumerable<Guid> testAnswers, Guid userId);
     }
 }

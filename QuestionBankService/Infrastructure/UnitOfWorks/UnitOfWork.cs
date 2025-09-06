@@ -9,12 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.UnitOfWorks
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly DefaultContext _context;
+        private IDbContextTransaction _trans;
 
         public IAnswerRepository AnswerRepository { get; }
         public IContextRepository ContextRepository { get; }
@@ -49,6 +51,21 @@ namespace Infrastructure.UnitOfWorks
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        public async Task BeginTransactionAsync()
+        {
+            _trans = await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            await _context.Database.CommitTransactionAsync();
+        }
+
+        public async Task RollBackTransactionAsync()
+        {
+            await _trans.RollbackAsync();
         }
     }
 
