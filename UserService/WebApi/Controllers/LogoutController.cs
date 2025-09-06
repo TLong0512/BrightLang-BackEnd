@@ -2,6 +2,7 @@
 using Application.Abstraction.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Helpers;
 
 namespace WebApi.Controllers;
 
@@ -26,9 +27,7 @@ public class LogoutController : ControllerBase
             return Forbid();
         }
 
-        Response.Cookies.Delete(Constant.RefreshTokenIdName);
-        Response.Cookies.Delete(Constant.RefreshTokenName);
-        Response.Cookies.Delete(Constant.AccessTokenName);
+        CookieHelper.RemoveAuthCookies(Response);
 
         await tokenService.RevokeRefreshTokenAsync(refreshTokenId);
 
