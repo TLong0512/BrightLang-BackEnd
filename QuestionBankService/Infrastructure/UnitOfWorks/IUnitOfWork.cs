@@ -17,6 +17,9 @@ namespace Infrastructure.UnitOfWorks
         IRangeRepository RangeRepository { get;  }  
         ISkillLevelRepository SkillLevelRepository { get; }
         ISkillRepository SkillRepository { get; }
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollBackTransactionAsync();
         Task<int> SaveChangesAsync();
     }
 }

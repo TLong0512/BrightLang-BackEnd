@@ -35,6 +35,7 @@ namespace Application.Services.Implementations
             else
             {
                 var newContext = _mapper.Map<Context>(contextAddDto);
+ 
                 await _unitOfWork.ContextRepository.AddAsync(newContext, userId);
                 await _unitOfWork.SaveChangesAsync();
                 return newContext.Id;

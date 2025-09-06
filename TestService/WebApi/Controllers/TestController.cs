@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
@@ -40,20 +41,32 @@ namespace WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> CreateTestAsync()
         {
+
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized("UserId not found in token");
 
             Guid userId = Guid.Parse(userIdClaim);
 
+            var listTests = await _testService.GetAllTestByUserIdAsync(userId);
+            var latestTest = listTests.Items.FirstOrDefault();
+
+            if ( latestTest != null && DateTime.TryParseExact(latestTest.CreatedDate, "dd/MM/yyyy HH:mm",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var createdDate))
+            {
+                if (createdDate.AddMinutes(latestTest.Duration) > DateTime.Now)
+                    return Ok(latestTest.Id);
+            }
 
             var response = await _httpClient.GetAsync($"{_baseApiUrl}/Question/generate/all");
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode, "Request Failed");
+
             var json = await response.Content.ReadAsStringAsync();
             var questionIds = JsonSerializer.Deserialize<IEnumerable<Guid>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (questionIds == null)
+                return NotFound("No question found");
             var testId = await _testService.CreateTestAsync(userId, questionIds);
-
             return Ok(testId);
         }
         [HttpPost("submit/{testId}")]
