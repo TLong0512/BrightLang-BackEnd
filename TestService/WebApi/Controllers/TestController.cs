@@ -54,7 +54,7 @@ namespace WebApi.Controllers
             if ( latestTest != null && DateTime.TryParseExact(latestTest.CreatedDate, "dd/MM/yyyy HH:mm",
                 CultureInfo.InvariantCulture, DateTimeStyles.None, out var createdDate))
             {
-                if (createdDate.AddMinutes(latestTest.Duration) > DateTime.Now)
+                if (latestTest.Score > 0 && createdDate.AddMinutes(latestTest.Duration) > DateTime.Now)
                     return Ok(latestTest.Id);
             }
 

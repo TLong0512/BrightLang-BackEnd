@@ -13,6 +13,6 @@ namespace Application.Dtos.TestDtos
         public Guid Id { get; set; }
         public string CreatedDate { get; set; }
         public int Duration { get; set; }
-        public string Score { get; set; }
+        public int Score { get; set; }
     }
 }

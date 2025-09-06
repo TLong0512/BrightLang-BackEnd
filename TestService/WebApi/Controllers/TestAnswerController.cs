@@ -27,7 +27,7 @@ namespace WebApi.Controllers
 
             await _testAnswerService.AddTestAnswerAsync(testId, answers, userId);
 
-            return Ok("Added answer for test successfully");
+            return Ok(new {Message = "Added answer for test successfully" });
         }
     }
 }
