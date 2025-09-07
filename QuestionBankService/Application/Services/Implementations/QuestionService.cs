@@ -265,7 +265,7 @@ namespace Application.Services.Implementations
 
                 // update context
                 var context = question.Context;
-                var updatedContext = _mapper.Map<Context>(questionUpdateDto.Context);
+                var updatedContext = _mapper.Map<Context>(questionUpdateDto.ContextUpdate);
                 context.Content = updatedContext.Content;
                 context.Explain = updatedContext.Content;
                 context.IsBelongTest = updatedContext.IsBelongTest;
