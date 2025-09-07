@@ -109,7 +109,21 @@ public class UserRoadmapsController : ControllerBase
         Roadmap? theUsedRoadmap = await unitOfWork.Roadmaps.GetByIdAsync(myRoadmap.RoadmapId)
             ?? new Roadmap { Name = "Unknown roadmap." };
 
-        IEnumerable<Process> processes = await unitOfWork.Processes.FindAsync(e => e.UserRoadmapId == myRoadmap.Id);
+        IEnumerable<Process> processes = await unitOfWork.Processes
+            .FindAsync(e => e.UserRoadmapId == myRoadmap.Id);
+
+        IEnumerable<RoadmapElement> roadmapElements = await unitOfWork.RoadmapElements
+            .FindAsync(e => e.RoadmapId == theUsedRoadmap.Id);
+
+        IEnumerable<ProcessDetailDto> compiledProcesses = processes.Zip(
+            roadmapElements, (process, roadmapElement) => new ProcessDetailDto
+            {
+                RoadmapElementId = roadmapElement.Id,
+                QuestionPerDay = roadmapElement.QuestionPerDay,
+                RangeId = roadmapElement.RangeId,
+                IsFinished = process.IsFinished,
+                IsOpened = process.IsOpened,
+            });
 
         return Ok(new UserRoadmapDetailDto
         {
@@ -119,13 +133,7 @@ public class UserRoadmapsController : ControllerBase
                 Id = theUsedRoadmap.Id,
                 Name = theUsedRoadmap.Name,
             },
-            Processs = processes.Select(e => new ProcessDto
-            {
-                RoadmapElementId = e.RoadmapElementId,
-                UserRoadmapId = e.UserRoadmapId,
-                IsFinished = e.IsFinished,
-                IsOpened = e.IsOpened,
-            }).ToList(),
+            Processs = compiledProcesses.ToList(),
         });
     }
 
@@ -149,6 +157,7 @@ public class UserRoadmapsController : ControllerBase
             .FindAsync(r => r.RoadmapId == existRoadmap.Id))
             .ToList();
 
+        List<Process> processes = new List<Process>();
         foreach (RoadmapElement element in roadmapElements)
         {
             var process = new Process
@@ -159,11 +168,20 @@ public class UserRoadmapsController : ControllerBase
                 IsOpened = false,
             };
             await unitOfWork.Processes.AddAsync(process);
+            processes.Add(process);
         }
         await unitOfWork.SaveChangesAsync(); // got exceptions StartDate cant be null
         // end of add processes
 
-        IEnumerable<Process> processes = await unitOfWork.Processes.FindAsync(r => r.UserRoadmapId == myNewUserRoadmap.Id);
+        IEnumerable<ProcessDetailDto> compiledProcesses = processes.Zip(
+            roadmapElements, (process, roadmapElement) => new ProcessDetailDto
+            {
+                RoadmapElementId = roadmapElement.Id,
+                QuestionPerDay = roadmapElement.QuestionPerDay,
+                RangeId = roadmapElement.RangeId,
+                IsFinished = process.IsFinished,
+                IsOpened = process.IsOpened,
+            });
 
         return CreatedAtAction(nameof(GetMyRoadmap), new { id = myNewUserRoadmap.Id }, new UserRoadmapDetailDto
         {
@@ -173,13 +191,7 @@ public class UserRoadmapsController : ControllerBase
                 Id = existRoadmap.Id,
                 Name = existRoadmap.Name,
             },
-            Processs = processes.Select(r => new ProcessDto
-            {
-                RoadmapElementId = r.RoadmapElementId,
-                UserRoadmapId = r.UserRoadmapId,
-                IsFinished = r.IsFinished,
-                IsOpened = r.IsOpened,
-            }).ToList(), 
+            Processs = compiledProcesses.ToList(),
         });
     }
 
@@ -187,7 +199,7 @@ public class UserRoadmapsController : ControllerBase
     // but UserRoadmap's RoadmapElement can.
     // we implements PUT endpoints to toggle fields.
     //[HttpPut("{userRoadmapId}/roadmapElement/{roadmapElementId}/toggle-finish")]
-    
+
     //public async Task<ActionResult> ToggleProcessIsFinished(Guid userRoadmapId, Guid roadmapElementId)
     //{
     //    Process? process = await unitOfWork.Processes.GetByIdAsync(userRoadmapId, roadmapElementId);
@@ -219,7 +231,7 @@ public class UserRoadmapsController : ControllerBase
         if (roadmap == null) return NotFound();
 
         IEnumerable<RoadmapElement> roadmapElements = await unitOfWork.RoadmapElements.FindAsync(r => r.RoadmapId == roadmap.Id && r.Order == order);
-        if(roadmapElements.Any() == false) return NotFound();
+        if (roadmapElements.Any() == false) return NotFound();
         RoadmapElement roadmapElement = roadmapElements.ElementAt(0);
 
         IEnumerable<Process> processes = await unitOfWork.Processes.FindAsync(r => r.UserRoadmapId == userRoadmapId && r.RoadmapElementId == roadmapElement.Id);
