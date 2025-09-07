@@ -21,16 +21,12 @@ public class LogoutController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Logout()
     {
-        string? refreshTokenIdRaw = Request.Cookies[Constant.RefreshTokenIdName];
-        if (refreshTokenIdRaw == null || Guid.TryParse(refreshTokenIdRaw, out Guid refreshTokenId) == false)
-        {
-            return Forbid();
-        }
-
         CookieHelper.RemoveAuthCookies(Response);
-
-        await tokenService.RevokeRefreshTokenAsync(refreshTokenId);
-
+        string? refreshTokenIdRaw = Request.Cookies[Constant.RefreshTokenIdName];
+        if (refreshTokenIdRaw != null && Guid.TryParse(refreshTokenIdRaw, out Guid refreshTokenId))
+        {
+            await tokenService.RevokeRefreshTokenAsync(refreshTokenId);
+        }
         return Ok();
     }
 }
