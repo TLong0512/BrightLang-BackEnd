@@ -11,6 +11,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 25
+    volumes: ["user_data:/var/opt/mssql"]
     networks: [user-network]
 
   user-service:
@@ -44,6 +45,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 25
+    volumes: ["vocabulary_data:/var/opt/mssql"]
     networks: [vocabulary-network]
 
   vocabulary-service:
@@ -75,6 +77,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 25
+    volumes: ["question_bank_data:/var/opt/mssql"]
     networks: [question-bank-network]
 
   question-bank-service:
@@ -106,6 +109,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 25
+    volumes: ["roadmap_data:/var/opt/mssql"]
     networks: [roadmap-network]
 
   roadmap-service:
@@ -138,6 +142,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 25
+    volumes: ["test_data:/var/opt/mssql"]
     networks: [test-network]
 
   test-service:
@@ -196,6 +201,13 @@ services:
         condition: service_started
     ports: ["${GATEWAY_PORT}:8080"]
     networks: [main-network]
+
+volumes:
+  user_data:
+  vocabulary_data:
+  question_bank_data:
+  roadmap_data:
+  test_data:
 
 networks:
   main-network:
