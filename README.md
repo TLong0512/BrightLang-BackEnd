@@ -3,8 +3,8 @@
 
 # Command to run:
 
-`docker compose up -f "docker-compose.yml" --build`
+`docker compose -f 'docker-compose.yml' up -d --build`
 
 or
 
-`docker compose up -f "docker-compose-optimized.yml" --build`
+`docker compose -f 'docker-compose-optimized.yml' up -d --build`

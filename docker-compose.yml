@@ -155,7 +155,7 @@ services:
       - JwtSettings__Key=${JWTSETTINGS__KEY} 
       - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
       - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
-      - ApiSettings__BaseApiUrl=http://question-bank-service:8080 # why don't you name it ServiceUrls__QuestionBank?
+      - ApiSettings__BaseApiUrl=http://question-bank-service:8080/api # why don't you name it ServiceUrls__QuestionBank?
     depends_on:
       test-db:
         condition: service_healthy

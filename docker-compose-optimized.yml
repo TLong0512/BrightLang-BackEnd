@@ -88,10 +88,10 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=db,1433;Database=TestDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
-      - JwtSettings__Key=${JWTSETTINGS__KEY}
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
-      - ApiSettings__BaseApiUrl=http://question-bank-service:8080 # why don't you name it ServiceUrls__QuestionBank?
+      - JwtSettings__Key=${JWTSETTINGS__KEY} 
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
+      - ApiSettings__BaseApiUrl=http://question-bank-service:8080/api # why don't you name it ServiceUrls__QuestionBank?
     depends_on:
       db:
         condition: service_healthy
@@ -104,9 +104,9 @@ services:
     container_name: practice-service
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - JwtSettings__Key=${JWTSETTINGS__KEY}
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
+      - JwtSettings__Key=${JWTSETTINGS__KEY} 
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
       - ApiSettings__QuestionApiUrl=http://question-bank-service:8080/api # why don't you name it ServiceUrls__QuestionBank?
     depends_on:
       question-bank-service:
