@@ -18,12 +18,11 @@ namespace Infrastructure.Repositories.Implementations
 
         }
 
-        public Task DeleteByCondition(Expression<Func<TestAnswer, bool>> predicate)
+        public async Task DeleteByCondition(Expression<Func<TestAnswer, bool>> predicate)
         {
-            _context.TestAnswers
+            await _context.TestAnswers
                        .Where(predicate)
                        .ExecuteUpdateAsync(s => s.SetProperty(e => e.IsDeleted, true));
-            return Task.CompletedTask;
         }
     }
 }
