@@ -90,7 +90,7 @@ namespace Application.Services.Implementations
             }
 
             var test = await _unitOfWork.TestRepository.GetByIdAsync(testId);
-            int cnt = listAnswerIds.Count(x => listAnswerIds.Contains(x));
+            int cnt = listAnswerIds.Count(x => listTrueAnswerIds.Contains(x));
             test.Score = cnt != 0 ? cnt : 0;
             await _unitOfWork.TestRepository.Update(test, userId);
             await _unitOfWork.SaveChangesAsync();

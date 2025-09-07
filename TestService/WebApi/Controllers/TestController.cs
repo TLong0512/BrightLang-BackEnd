@@ -93,11 +93,6 @@ namespace WebApi.Controllers
 
             var result = await _testService.GetAllTestByUserIdAsync(userId, page, pageSize);
 
-            if (result == null || !result.Items.Any())
-            {
-                return NotFound();
-            }
-
             return Ok(result);
         }
         [HttpGet("test-detail/{testId}")]
