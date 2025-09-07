@@ -86,7 +86,7 @@ namespace Application.Services.Implementations
             foreach(var answerId in listAnswerIds)
             {
                 var testAnswer = new TestAnswer { TestId = testId, AnswerId = answerId };
-                await _unitOfWork.TestAnswerRepository.AddAsync(testAnswer, userId);
+                await _unitOfWork.TestAnswerRepository.AddAnswerAsync(testAnswer, userId);
             }
 
             var test = await _unitOfWork.TestRepository.GetByIdAsync(testId);
