@@ -9,7 +9,6 @@ namespace Application.Dtos.ExamTypeDtos
     public class ExamTypeViewDto
     {
         public Guid Id { get; set; }
-        public Guid SkillId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }
