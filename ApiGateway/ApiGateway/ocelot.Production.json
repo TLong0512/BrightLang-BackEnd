@@ -1,5 +1,6 @@
 {
   "Routes": [
+    // --- UserService ---
     {
       "DownstreamPathTemplate": "/api/Authentication/{everything}",
       "DownstreamScheme": "http",
@@ -10,7 +11,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Authentication/{everything}",
-      "SwaggerKey": "UserService_Authentication"
+      "SwaggerKey": "UserService"
     },
     {
       "DownstreamPathTemplate": "/api/my-account/{everything}",
@@ -22,7 +23,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/my-account/{everything}",
-      "SwaggerKey": "UserService_my-account"
+      "SwaggerKey": "UserService"
     },
     {
       "DownstreamPathTemplate": "/api/Users/{everything}",
@@ -34,9 +35,10 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Users/{everything}",
-      "SwaggerKey": "UserService_Users"
+      "SwaggerKey": "UserService"
     },
 
+    // --- VocabularyService ---
     {
       "DownstreamPathTemplate": "/api/Book/{everything}",
       "DownstreamScheme": "http",
@@ -47,7 +49,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Book/{everything}",
-      "SwaggerKey": "VocabularyService_Book"
+      "SwaggerKey": "VocabularyService"
     },
     {
       "DownstreamPathTemplate": "/api/Vocabulary/{everything}",
@@ -59,9 +61,10 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Vocabulary/{everything}",
-      "SwaggerKey": "VocabularyService_Vocabulary"
+      "SwaggerKey": "VocabularyService"
     },
 
+    // --- QuestionBankService ---
     {
       "DownstreamPathTemplate": "/api/Answer/{everything}",
       "DownstreamScheme": "http",
@@ -72,7 +75,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Answer/{everything}",
-      "SwaggerKey": "QuestionBankService_Answer"
+      "SwaggerKey": "QuestionBankService"
     },
     {
       "DownstreamPathTemplate": "/api/Context/{everything}",
@@ -84,7 +87,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Context/{everything}",
-      "SwaggerKey": "QuestionBankService_Context"
+      "SwaggerKey": "QuestionBankService"
     },
     {
       "DownstreamPathTemplate": "/api/ExamType/{everything}",
@@ -96,7 +99,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/ExamType/{everything}",
-      "SwaggerKey": "QuestionBankService_ExamType"
+      "SwaggerKey": "QuestionBankService"
     },
     {
       "DownstreamPathTemplate": "/api/Level/{everything}",
@@ -108,7 +111,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Level/{everything}",
-      "SwaggerKey": "QuestionBankService_Level"
+      "SwaggerKey": "QuestionBankService"
     },
     {
       "DownstreamPathTemplate": "/api/Question/{everything}",
@@ -120,7 +123,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Question/{everything}",
-      "SwaggerKey": "QuestionBankService_Question"
+      "SwaggerKey": "QuestionBankService"
     },
     {
       "DownstreamPathTemplate": "/api/Range/{everything}",
@@ -132,7 +135,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Range/{everything}",
-      "SwaggerKey": "QuestionBankService_Range"
+      "SwaggerKey": "QuestionBankService"
     },
     {
       "DownstreamPathTemplate": "/api/Skill/{everything}",
@@ -144,7 +147,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Skill/{everything}",
-      "SwaggerKey": "QuestionBankService_Skill"
+      "SwaggerKey": "QuestionBankService"
     },
     {
       "DownstreamPathTemplate": "/api/SkillLevel/{everything}",
@@ -156,9 +159,10 @@
         }
       ],
       "UpstreamPathTemplate": "/api/SkillLevel/{everything}",
-      "SwaggerKey": "QuestionBankService_SkillLevel"
+      "SwaggerKey": "QuestionBankService"
     },
 
+    // --- RoadmapService ---
     {
       "DownstreamPathTemplate": "/api/RoadmapElementRanges/{everything}",
       "DownstreamScheme": "http",
@@ -169,7 +173,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/RoadmapElementRanges/{everything}",
-      "SwaggerKey": "RoadmapService_RoadmapElementRanges"
+      "SwaggerKey": "RoadmapService"
     },
     {
       "DownstreamPathTemplate": "/api/Roadmaps/{everything}",
@@ -181,7 +185,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Roadmaps/{everything}",
-      "SwaggerKey": "RoadmapService_Roadmaps"
+      "SwaggerKey": "RoadmapService"
     },
     {
       "DownstreamPathTemplate": "/api/UserRoadmaps/{everything}",
@@ -193,177 +197,114 @@
         }
       ],
       "UpstreamPathTemplate": "/api/UserRoadmaps/{everything}",
-      "SwaggerKey": "RoadmapService_UserRoadmaps"
-    }
+      "SwaggerKey": "RoadmapService"
+    },
 
+    // --- TestService ---
+    {
+      "DownstreamPathTemplate": "/api/Test/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "test-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Test/{everything}",
+      "SwaggerKey": "TestService"
+    },
+    {
+      "DownstreamPathTemplate": "/api/TestAnswer/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "test-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/TestAnswer/{everything}",
+      "SwaggerKey": "TestService"
+    },
+
+    // --- PracticeService ---
+    {
+      "DownstreamPathTemplate": "/api/Practice/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "practice-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Practice/{everything}",
+      "SwaggerKey": "PracticeService"
+    }
   ],
+
   "SwaggerEndPoints": [
     {
-      "Key": "UserService_Authentication",
+      "Key": "UserService",
       "Config": [
         {
-          "Name": "UserService - Authentication API",
+          "Name": "User Service API",
           "Version": "v1",
           "Url": "http://user-service:8080/swagger/v1/swagger.json"
         }
       ]
     },
     {
-      "Key": "UserService_my-account",
+      "Key": "VocabularyService",
       "Config": [
         {
-          "Name": "UserService - My Account API",
-          "Version": "v1",
-          "Url": "http://user-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "UserService_Users",
-      "Config": [
-        {
-          "Name": "UserService - Users API",
-          "Version": "v1",
-          "Url": "http://user-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-
-    {
-      "Key": "VocabularyService_Book",
-      "Config": [
-        {
-          "Name": "Vocabulary Service - Book API",
+          "Name": "Vocabulary Service API",
           "Version": "v1",
           "Url": "http://vocabulary-service:8080/swagger/v1/swagger.json"
         }
       ]
     },
     {
-      "Key": "VocabularyService_Vocabulary",
+      "Key": "QuestionBankService",
       "Config": [
         {
-          "Name": "Vocabulary Service - Vocabulary API",
-          "Version": "v1",
-          "Url": "http://vocabulary-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-
-    {
-      "Key": "QuestionBankService_Answer",
-      "Config": [
-        {
-          "Name": "Question Bank Service - Answer API",
+          "Name": "Question Bank Service API",
           "Version": "v1",
           "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
         }
       ]
     },
     {
-      "Key": "QuestionBankService_Context",
+      "Key": "RoadmapService",
       "Config": [
         {
-          "Name": "Question Bank Service - Context API",
-          "Version": "v1",
-          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "QuestionBankService_ExamType",
-      "Config": [
-        {
-          "Name": "Question Bank Service - Exam Type API",
-          "Version": "v1",
-          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "QuestionBankService_Level",
-      "Config": [
-        {
-          "Name": "Question Bank Service - Level API",
-          "Version": "v1",
-          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "QuestionBankService_Question",
-      "Config": [
-        {
-          "Name": "Question Bank Service - Question API",
-          "Version": "v1",
-          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "QuestionBankService_Range",
-      "Config": [
-        {
-          "Name": "Question Bank Service - Range API",
-          "Version": "v1",
-          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "QuestionBankService_Skill",
-      "Config": [
-        {
-          "Name": "Question Bank Service - Skill API",
-          "Version": "v1",
-          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "QuestionBankService_SkillLevel",
-      "Config": [
-        {
-          "Name": "Question Bank Service - SkillLevel API",
-          "Version": "v1",
-          "Url": "http://question-bank-service:8080/swagger/v1/swagger.json"
-        }
-      ]
-    },
-
-    {
-      "Key": "RoadmapService_RoadmapElementRanges",
-      "Config": [
-        {
-          "Name": "Roadmap Service - Roadmap Element Ranges API",
+          "Name": "Roadmap Service API",
           "Version": "v1",
           "Url": "http://roadmap-service:8080/swagger/v1/swagger.json"
         }
       ]
     },
     {
-      "Key": "RoadmapService_Roadmaps",
+      "Key": "TestService",
       "Config": [
         {
-          "Name": "Roadmap Service - Roadmaps API",
+          "Name": "Test Service API",
           "Version": "v1",
-          "Url": "http://roadmap-service:8080/swagger/v1/swagger.json"
+          "Url": "http://test-service:8080/swagger/v1/swagger.json"
         }
       ]
     },
     {
-      "Key": "RoadmapService_UserRoadmaps",
+      "Key": "PracticeService",
       "Config": [
         {
-          "Name": "Roadmap Service - User Roadmaps API",
+          "Name": "Practice Service API",
           "Version": "v1",
-          "Url": "http://roadmap-service:8080/swagger/v1/swagger.json"
+          "Url": "http://practice-service:8080/swagger/v1/swagger.json"
         }
       ]
     }
-
   ],
-   "GlobalConfiguration": {
+
+  "GlobalConfiguration": {
     "BaseUrl": "http://localhost:8080"
   }
 }
