@@ -56,7 +56,7 @@ public class LoginController : ControllerBase
     // 4.2. Error → refresh failed
     // 4.2.1. Browser/client shows login screen because both tokens are effectively invalid/expired.
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh()
+    public async Task<ActionResult<MyAccountDto>> Refresh()
     {
         // validate refresh token
         // refresh token not found => reject
@@ -78,19 +78,31 @@ public class LoginController : ControllerBase
 
         // found none
         if (currentRefreshToken == null)
+        {
+            CookieHelper.RemoveAuthCookies(Response);
             return Unauthorized();
+        }
 
         // if the token is being revoked
         if (currentRefreshToken.RevokeAt.HasValue)
+        {
+            CookieHelper.RemoveAuthCookies(Response);
             return Unauthorized();
+        }
 
         // if it is expired
         if (currentRefreshToken.ExpireAt <= DateTime.UtcNow)
+        {
+            CookieHelper.RemoveAuthCookies(Response);
             return Unauthorized();
+        }
 
         // finally, check if the token is matched.
         if (BCrypt.Net.BCrypt.Verify(refreshTokenFromRequest, currentRefreshToken.Token) == false)
+        {
+            CookieHelper.RemoveAuthCookies(Response);
             return Unauthorized();
+        }
 
         // TODO: add a background job / cleanup service to remove expired refresh tokens from DB.
 
@@ -100,7 +112,10 @@ public class LoginController : ControllerBase
 
         // for some reason User is null (idk maybe it is deleted?)
         if (user == null)
+        {
+            CookieHelper.RemoveAuthCookies(Response);
             return Unauthorized();
+        }
 
         // rotate refresh token 
         // Invalidate old refresh token
@@ -118,12 +133,13 @@ public class LoginController : ControllerBase
             CookieHelper.SetAuthCookies(Response, newAccessToken, newRefreshToken, newRefreshTokenId);
 
             await transaction.CommitAsync();
-            return Ok();
+            return await user.ToMyAccountDtoAsync(unitOfWork);
         }
         catch (DbUpdateConcurrencyException)
         {
             await transaction.RollbackAsync();
-            return Conflict();
+            CookieHelper.RemoveAuthCookies(Response);
+            return Unauthorized();
         }
         catch
         {
