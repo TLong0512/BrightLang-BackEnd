@@ -52,6 +52,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseCors("AllowAngular");
+
 // Configure the HTTP request pipeline.
 
 app.UseSwagger();
