@@ -1,6 +1,7 @@
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
 using Infrastructure.Contexts;
+using Infrastructure.Seeds;
 using Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -58,6 +59,13 @@ app.UseCors("AllowAngular");
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+using (IServiceScope serviceScope = app.Services.CreateScope())
+{
+    IServiceProvider serviceScopeProvider = serviceScope.ServiceProvider;
+    DefaultContext dbContext = serviceScopeProvider.GetRequiredService<DefaultContext>();
+    await Seed.ApplyAsync(dbContext, serviceScopeProvider);
+}
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

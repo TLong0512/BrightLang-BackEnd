@@ -74,7 +74,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> SubmitTestAsync(Guid testId, [FromBody] SubmitTestRequestDto submitTestRequestDto)
         {
             await _testService.SubmitAnswerInATest(Guid.NewGuid(), testId, submitTestRequestDto.listAnswerIds, submitTestRequestDto.listTrueAnswerIds);
-            return Ok(("Result has been saved"));
+            return Ok(new { Message = "Submit successfully" });
         }
         [HttpGet("user-test/all/{page}/{pageSize}")]
         [Authorize]
