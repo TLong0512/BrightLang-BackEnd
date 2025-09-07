@@ -82,11 +82,11 @@ namespace Application.Services.Implementations
 
         public async Task SubmitAnswerInATest(Guid userId, Guid testId, IEnumerable<Guid> listAnswerIds, IEnumerable<Guid> listTrueAnswerIds)
         {
+            await _unitOfWork.TestAnswerRepository.DeleteByCondition(x => x.TestId == testId);
             foreach(var answerId in listAnswerIds)
             {
                 var testAnswer = new TestAnswer { TestId = testId, AnswerId = answerId };
                 await _unitOfWork.TestAnswerRepository.AddAsync(testAnswer, userId);
-                await _unitOfWork.SaveChangesAsync();
             }
 
             var test = await _unitOfWork.TestRepository.GetByIdAsync(testId);
