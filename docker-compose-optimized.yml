@@ -5,14 +5,14 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${SA_PASSWORD:-Str0ng!Passw0rd}
-    ports: ["6001:1433"]
+    ports: [ "6001:1433" ]
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$SA_PASSWORD -Q 'SELECT 1' || exit 1"]
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $$SA_PASSWORD -Q 'SELECT 1' || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 25
-    volumes: ["data:/var/opt/mssql"]
-    networks: [main-network]
+    volumes: [ "data:/var/opt/mssql" ]
+    networks: [ main-network ]
 
   user-service:
     build:
@@ -23,15 +23,14 @@ services:
       - ConnectionStrings__DefaultConnection=Server=db,1433;Database=UserDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
       - Email__Username=${EMAIL__USERNAME}
       - Email__Password=${EMAIL__PASSWORD}
-      - JwtSettings__Key=${JWTSETTINGS__KEY} 
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
+      - JwtSettings__Key=${JWTSETTINGS__KEY}
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
     depends_on:
       db:
         condition: service_healthy
-    ports: ["5001:8080"]
-    networks: [main-network]
-
+    ports: [ "5001:8080" ]
+    networks: [ main-network ]
 
   vocabulary-service:
     build:
@@ -40,15 +39,14 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=db,1433;Database=VocabularyDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
-      - JwtSettings__Key=${JWTSETTINGS__KEY} 
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
+      - JwtSettings__Key=${JWTSETTINGS__KEY}
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
     depends_on:
       db:
         condition: service_healthy
-    ports: ["5002:8080"]
-    networks: [main-network]
-
+    ports: [ "5002:8080" ]
+    networks: [ main-network ]
 
   question-bank-service:
     build:
@@ -57,15 +55,14 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=db,1433;Database=QuestionBankDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
-      - JwtSettings__Key=${JWTSETTINGS__KEY} 
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
+      - JwtSettings__Key=${JWTSETTINGS__KEY}
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
     depends_on:
       db:
         condition: service_healthy
-    ports: ["5003:8080"]
-    networks: [main-network]
-
+    ports: [ "5003:8080" ]
+    networks: [ main-network ]
 
   roadmap-service:
     build:
@@ -74,16 +71,15 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=db,1433;Database=RoadmapDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
-      - JwtSettings__Key=${JWTSETTINGS__KEY} 
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
-      - ServiceUrls__QuestionBank=http://question-bank-service:8080      
+      - JwtSettings__Key=${JWTSETTINGS__KEY}
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
+      - ServiceUrls__QuestionBank=http://question-bank-service:8080
     depends_on:
       db:
         condition: service_healthy
-    ports: ["5004:8080"]
-    networks: [main-network]
-
+    ports: [ "5004:8080" ]
+    networks: [ main-network ]
 
   test-service:
     build:
@@ -92,16 +88,15 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Server=db,1433;Database=TestDb;User Id=sa;Password=${SA_PASSWORD:-Str0ng!Passw0rd};TrustServerCertificate=True;
-      - JwtSettings__Key=${JWTSETTINGS__KEY} 
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
+      - JwtSettings__Key=${JWTSETTINGS__KEY}
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
       - ApiSettings__BaseApiUrl=http://question-bank-service:8080 # why don't you name it ServiceUrls__QuestionBank?
     depends_on:
       db:
         condition: service_healthy
-    ports: ["5005:8080"]
-    networks: [main-network]
-
+    ports: [ "5005:8080" ]
+    networks: [ main-network ]
 
   practice-service:
     build:
@@ -109,43 +104,48 @@ services:
     container_name: practice-service
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - JwtSettings__Key=${JWTSETTINGS__KEY} 
-      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
-      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
-      - ApiSettings__QuestionApiUrl=http://question-bank-service:8080 # why don't you name it ServiceUrls__QuestionBank?
+      - JwtSettings__Key=${JWTSETTINGS__KEY}
+      - JwtSettings__Issuer=${JWTSETTINGS__ISSUER}
+      - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE}
+      - ApiSettings__QuestionApiUrl=http://question-bank-service:8080/api # why don't you name it ServiceUrls__QuestionBank?
     depends_on:
       question-bank-service:
         condition: service_started
-    ports: ["5006:8080"]
-    networks: [main-network]
-  
+    ports: [ "5006:8080" ]
+    networks: [ main-network ]
 
   apigateway:
     build:
-      context: ./ApiGateway 
+      context: ./ApiGateway
     container_name: apigateway
     environment:
       - ASPNETCORE_URLS=http://+:8080
     depends_on:
-      user-service: # 5001
+      user-service:
+        # 5001
         condition: service_started
-      vocabulary-service: # 5002
+      vocabulary-service:
+        # 5002
         condition: service_started
-      question-bank-service: # 5003
+      question-bank-service:
+        # 5003
         condition: service_started
-      roadmap-service: # 5004
+      roadmap-service:
+        # 5004
         condition: service_started
-      test-service: # 5005
+      test-service:
+        # 5005
         condition: service_started
-      practice-service: # 5006
+      practice-service:
+        # 5006
         condition: service_started
-    ports: ["${GATEWAY_PORT}:8080"]
-    networks: [main-network]
+    ports: [ "${GATEWAY_PORT}:8080" ]
+    networks: [ main-network ]
 
 volumes:
   data:
 
+
 networks:
   main-network:
     driver: bridge
-  

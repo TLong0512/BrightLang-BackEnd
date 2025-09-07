@@ -172,7 +172,7 @@ services:
       - JwtSettings__Key=${JWTSETTINGS__KEY} 
       - JwtSettings__Issuer=${JWTSETTINGS__ISSUER} 
       - JwtSettings__Audience=${JWTSETTINGS__AUDIENCE} 
-      - ApiSettings__QuestionApiUrl=http://question-bank-service:8080 # why don't you name it ServiceUrls__QuestionBank?
+      - ApiSettings__QuestionApiUrl=http://question-bank-service:8080/api # why don't you name it ServiceUrls__QuestionBank?
     depends_on:
       question-bank-service:
         condition: service_started
