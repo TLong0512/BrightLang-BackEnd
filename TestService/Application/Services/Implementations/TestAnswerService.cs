@@ -27,7 +27,7 @@ namespace Application.Services.Implementations
 
             foreach (var item in testAnswers)
             {
-                await _unitOfWork.TestAnswerRepository.AddAsync(new TestAnswer { AnswerId = item, TestId = testId }, userId);
+                await _unitOfWork.TestAnswerRepository.AddAnswerAsync(new TestAnswer { AnswerId = item, TestId = testId }, userId);
                 await _unitOfWork.SaveChangesAsync();
             }
         }
