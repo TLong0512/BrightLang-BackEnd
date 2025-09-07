@@ -60,6 +60,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseCors("AllowAngular");
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
