@@ -7,8 +7,8 @@ namespace WebApi.Authentication
     public static class JwtExtensions
     {
         public static IServiceCollection AddHttpOnlyOrDefaultJwt(
-        this IServiceCollection services,
-        TokenValidationParameters tokenValidationParameters)
+            this IServiceCollection services,
+            TokenValidationParameters tokenValidationParameters)
         {
             // from now on [Authroize] attribute will use JWT Bearer authentication
             AuthenticationBuilder authenticationBuilder
