@@ -53,6 +53,8 @@ namespace Application.Mappings
             CreateMap<Context, ContextAddDto>().ReverseMap();
             CreateMap<Context, ContextViewDto>().ReverseMap();
             CreateMap<Context, ContextUpdateDto>().ReverseMap();
+            CreateMap<Context, ContextUpdateInQuestionDto > ().ReverseMap();
+
 
             CreateMap<Question, QuestionAddDto>().ReverseMap();
             CreateMap<Question, QuestionViewDto>()
@@ -64,6 +66,7 @@ namespace Application.Mappings
             CreateMap<Answer, AnswerUpdateDto>().ReverseMap();
             CreateMap<Answer, AnswerViewDto>().ReverseMap();
             CreateMap<AnswerSummaryDto, Answer>().ReverseMap();
+            CreateMap<AnswerUpdateInQuestionDto, Answer>().ReverseMap();
         }
     }
 }
