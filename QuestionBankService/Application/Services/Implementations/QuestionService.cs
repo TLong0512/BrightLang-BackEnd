@@ -369,7 +369,7 @@ namespace Application.Services.Implementations
 
             return result;
         }
-        public async Task<IEnumerable<Guid>> GenerateQuestionByRangeIdAsync(Guid rangeId)
+        public async Task<IEnumerable<Guid>> GenerateQuestionByRangeIdAsync(Guid rangeId, int num = -1)
         {
             var existingRange = await _unitOfWork.RangeRepository.GetByIdAsync(rangeId);
             //get list context in range
@@ -402,7 +402,40 @@ namespace Application.Services.Implementations
                     i++;
                 }
             }
-            return listGenQuestionResult;
+
+            if(num == -1)
+            {
+                return listGenQuestionResult;
+            }
+            if (listGenQuestionResult.Count > num)
+            {
+                // Random num elements in result
+                return listGenQuestionResult.OrderBy(x => random.Next()).Take(num).ToList();
+            }
+            else if (listGenQuestionResult.Count == num)
+            {
+                return listGenQuestionResult;
+            }
+            else // listGenQuestionResult.Count < num
+            {
+                var remainingIds = listQuestions.Select(q => q.Id)
+                                                .Except(listGenQuestionResult)
+                                                .ToList();
+
+                int needed = num - listGenQuestionResult.Count;
+
+                if (remainingIds.Count <= needed)
+                {
+                    // if remaining Ids + output < num => add all
+                    listGenQuestionResult.AddRange(remainingIds);
+                }
+                else
+                {
+                    // Random remainingIds
+                    listGenQuestionResult.AddRange(remainingIds.OrderBy(x => random.Next()).Take(needed));
+                }
+                return listGenQuestionResult;
+            }
         }
     }
 }

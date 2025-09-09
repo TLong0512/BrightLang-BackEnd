@@ -10,6 +10,7 @@ namespace Application.Dtos.ContextDtos
     public class ContextViewDto
     {
         public Guid Id { get; set; }
+        public Guid RangeId { get; set; }
         public string Content { get; set; }
         public string Explain { get; set; }
         public bool IsBelongTest { get; set; }
