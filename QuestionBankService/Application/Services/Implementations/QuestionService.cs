@@ -81,7 +81,7 @@ namespace Application.Services.Implementations
                         throw new ArgumentException("a question has wrong number");
                     // check ansser allow one true 
                     if (question.AnswerList.Count(x => x.IsCorrect) != 1)
-                            throw new ArgumentException("A question can only have one correct answer");
+                        throw new ArgumentException("A question can only have one correct answer");
                     // check answer has unique value
                     if (question.AnswerList.Select(x => x.Value).Distinct().Count() != question.AnswerList.Count())
                         throw new ArgumentException("duplicate answer value");
@@ -272,13 +272,21 @@ namespace Application.Services.Implementations
 
             // update context
             var context = question.Context;
-            await _unitOfWork.ContextRepository.Delete(context);
+            var range = await _unitOfWork.RangeRepository.GetByIdAsync(context.RangeId);
+            var skillLevel = await _unitOfWork.SkillLevelRepository.GetByIdAsync(range.SkillLevelId);
+            var level = await _unitOfWork.LevelRepository.GetByIdAsync(skillLevel.LevelId);
+            var examType = await _unitOfWork.ExamTypeRepository.GetByIdAsync(level.ExamTypeId);
 
-            var existingRanges = await _unitOfWork.RangeRepository
-                                                .GetByConditionAsync(x => x.StartQuestionNumber <= questionUpdateDto.QuestionNumber
+            var rangesInSameExamTypeAndSkill = await _unitOfWork.RangeRepository.GetByConditionAsync(r =>
+                                                r.SkillLevel.Level.ExamTypeId == examType.Id &&
+                                                r.SkillLevel.SkillId == skillLevel.SkillId
+                                            );
+            var existingRange = rangesInSameExamTypeAndSkill.FirstOrDefault(
+                                                x => x.StartQuestionNumber <= questionUpdateDto.QuestionNumber
                                                 && x.EndQuestionNumber >= questionUpdateDto.QuestionNumber);
-            var existingRange = existingRanges.FirstOrDefault();
             if (existingRange == null) throw new ArgumentException();
+
+            await _unitOfWork.ContextRepository.Delete(context);
 
             var newContext = new Context();
             newContext.Content = questionUpdateDto.ContextUpdate.Content;
@@ -403,7 +411,7 @@ namespace Application.Services.Implementations
                 }
             }
 
-            if(num == -1)
+            if (num == -1)
             {
                 return listGenQuestionResult;
             }
