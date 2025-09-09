@@ -49,7 +49,7 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("generate/range/{rangeId}/{num}")]
+        [HttpGet("generate/range/{rangeId}/{num?}")]
         [Authorize]
         public async Task<IActionResult> GenerateQuestionByRangeId(Guid rangeId, int num = -1)
         {
@@ -170,7 +170,6 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("generate/all/{numberPerSkillLevel?}")]
-        [Authorize]
         public async Task<IActionResult> GenerateAllQuestions(int numberPerSkillLevel = 2)
         {
             try
