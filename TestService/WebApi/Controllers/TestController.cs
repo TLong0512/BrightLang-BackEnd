@@ -41,7 +41,6 @@ namespace WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> CreateTestAsync()
         {
-
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
                 return Unauthorized("UserId not found in token");
@@ -51,21 +50,85 @@ namespace WebApi.Controllers
             var listTests = await _testService.GetAllTestByUserIdAsync(userId);
             var latestTest = listTests.Items.FirstOrDefault();
 
-            if ( latestTest != null && DateTime.TryParseExact(latestTest.CreatedDate, "dd/MM/yyyy HH:mm",
+            if (latestTest != null && DateTime.TryParseExact(latestTest.CreatedDate, "dd/MM/yyyy HH:mm",
                 CultureInfo.InvariantCulture, DateTimeStyles.None, out var createdDate))
             {
                 if (latestTest.Score < 0 && createdDate.AddMinutes(latestTest.Duration) > DateTime.Now)
                     return Ok(latestTest.Id);
             }
 
-            var response = await _httpClient.GetAsync($"{_baseApiUrl}/Question/generate/all");
+            var accessToken = HttpContext.Request.Cookies["AccessToken"];
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return Unauthorized("Missing access token in cookie");
+
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"{_baseApiUrl}/Question/generate/all"
+            );
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Replace("Bearer ", ""));
+
+            var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode, "Request Failed");
 
             var json = await response.Content.ReadAsStringAsync();
-            var questionIds = JsonSerializer.Deserialize<IEnumerable<Guid>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (questionIds == null)
+            var questionIds = JsonSerializer.Deserialize<IEnumerable<Guid>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (questionIds == null || !questionIds.Any())
                 return NotFound("No question found");
+
+            var testId = await _testService.CreateTestAsync(userId, questionIds);
+            return Ok(testId);
+        }
+
+        [HttpPost("create-test-by-exam-type/{examTypeId}")]
+        [Authorize]
+        public async Task<IActionResult> CreateTestByExamTypeAsync(Guid examTypeId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("UserId not found in token");
+
+            Guid userId = Guid.Parse(userIdClaim);
+
+            var listTests = await _testService.GetAllTestByUserIdAsync(userId);
+            var latestTest = listTests.Items.FirstOrDefault();
+
+            if (latestTest != null && DateTime.TryParseExact(latestTest.CreatedDate, "dd/MM/yyyy HH:mm",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var createdDate))
+            {
+                if (latestTest.Score < 0 && createdDate.AddMinutes(latestTest.Duration) > DateTime.Now)
+                    return Ok(latestTest.Id);
+            }
+
+            var accessToken = HttpContext.Request.Cookies["AccessToken"];
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return Unauthorized("Missing access token in cookie");
+
+            // Tạo request có Authorization header
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"{_baseApiUrl}/Question/generate/examType/{examTypeId}/{-1}"
+            );
+
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Replace("Bearer ", ""));
+
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+                return StatusCode((int)response.StatusCode, "Request Failed");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var questionIds = JsonSerializer.Deserialize<IEnumerable<Guid>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (questionIds == null || !questionIds.Any())
+                return NotFound("No question found");
+
             var testId = await _testService.CreateTestAsync(userId, questionIds);
             return Ok(testId);
         }

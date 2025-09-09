@@ -170,6 +170,7 @@ namespace WebApi.Controllers
             }
         }
         [HttpGet("generate/all/{numberPerSkillLevel?}")]
+        [Authorize]
         public async Task<IActionResult> GenerateAllQuestions(int numberPerSkillLevel = 2)
         {
             try
