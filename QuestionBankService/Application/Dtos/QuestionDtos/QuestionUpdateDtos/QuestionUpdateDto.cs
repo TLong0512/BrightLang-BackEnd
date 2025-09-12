@@ -13,7 +13,7 @@ namespace Application.Dtos.QuestionDtos.QuestionUpdateDtos
         public int QuestionNumber { get; set; }
         public string Content { get; set; }
         public string Explain { get; set; }
-        public ContextUpdateInQuestionDto Context { get; set; }
+        public ContextUpdateInQuestionDto ContextUpdate { get; set; }
         public List<AnswerUpdateInQuestionDto> ListAnswers { get; set; }
     }
 }

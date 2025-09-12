@@ -65,6 +65,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseCors("AllowAngular");
 
 using (IServiceScope serviceScope = app.Services.CreateScope())

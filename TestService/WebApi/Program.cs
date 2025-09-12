@@ -1,6 +1,8 @@
+using Application.Mappings;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
 using Infrastructure.Contexts;
+using Infrastructure.Seeds;
 using Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,7 +24,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfile>());
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestQuestionService, TesQuestionService>();
 builder.Services.AddScoped<ITestAnswerSevice, TestAnswerService>();
@@ -58,6 +60,13 @@ app.UseCors("AllowAngular");
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+using (IServiceScope serviceScope = app.Services.CreateScope())
+{
+    IServiceProvider serviceScopeProvider = serviceScope.ServiceProvider;
+    DefaultContext dbContext = serviceScopeProvider.GetRequiredService<DefaultContext>();
+    await Seed.ApplyAsync(dbContext, serviceScopeProvider);
+}
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

@@ -29,6 +29,6 @@ namespace Application.Services.Intefaces
         public Task<IEnumerable<Guid>> GenerateQuestionByExamTypeIdAsync(Guid examTypeId, int numberPerSkillLevel = 2);
         public Task<IEnumerable<Guid>> GenerateQuestionByLevelIdAsync(Guid levelId, int numberPerSkillLevel = 2);
         public Task<IEnumerable<Guid>> GenerateQuestionBySkillLevelIdAsync(Guid skillLevelId, int number = 2);
-        public Task<IEnumerable<Guid>> GenerateQuestionByRangeIdAsync(Guid rangeId);
+        public Task<IEnumerable<Guid>> GenerateQuestionByRangeIdAsync(Guid rangeId, int num = -1);
     }
 }

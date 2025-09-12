@@ -9,6 +9,7 @@ namespace Application.Dtos.SkillLevelDto
     public class SkillLevelViewDto
     {
         public Guid Id { get; set; }
+        public Guid SkillId { get; set; }
         public string SkillName { get; set; }   
         public string LevelName { get; set; }
     }

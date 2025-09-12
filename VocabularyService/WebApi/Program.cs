@@ -1,3 +1,4 @@
+using Application.Mappings;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
 using Infrastructure.Context;
@@ -37,7 +38,7 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IVocabularyService, VocabularyService>();
 
 ////auto mapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfile>());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -120,6 +121,15 @@ builder.Services.AddSwaggerGen(
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<VocabularyContext>();
+    if (dbContext.Database.CanConnect() == false)
+    {
+        await dbContext.Database.MigrateAsync();   
+    }
+}
 
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())

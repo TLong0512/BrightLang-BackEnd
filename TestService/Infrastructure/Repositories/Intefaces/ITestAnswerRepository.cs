@@ -11,5 +11,6 @@ namespace Infrastructure.Repositories.Intefaces
     public interface ITestAnswerRepository : IGenericRepository<TestAnswer>
     {
         Task DeleteByCondition(Expression<Func<TestAnswer, bool>> predicate);
+        Task AddAnswerAsync(TestAnswer entity, Guid userId);
     }
 }

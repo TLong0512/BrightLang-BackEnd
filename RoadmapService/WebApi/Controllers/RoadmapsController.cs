@@ -115,4 +115,40 @@ public class RoadmapsController : ControllerBase
         });
     }
     // TODO: consider caching result and update on question bank's change.
+
+
+    [HttpGet("by-roadmap-name")]
+    public async Task<ActionResult<List<RoadmapGeneralDto>>> GetRoadmapsByName([FromQuery] string roadmapName)
+    {
+        if (string.IsNullOrWhiteSpace(roadmapName))
+            return BadRequest("roadmapName is required.");
+
+        var roadmaps = await unitOfWork.Roadmaps.GetAllAsync();
+        var result = new List<RoadmapGeneralDto>();
+
+        foreach (var roadmap in roadmaps)
+        {
+            // chỉ lấy roadmap có Name khớp
+            if (!string.Equals(roadmap.Name, roadmapName, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var roadmapElements = await unitOfWork.RoadmapElements.FindAsync(r => r.RoadmapId == roadmap.Id);
+            double average = roadmapElements.Any() ? roadmapElements.Select(r => r.QuestionPerDay).Average() : 0;
+            var userRoadmaps = await unitOfWork.UserRoadmaps.FindAsync(r => r.RoadmapId == roadmap.Id);
+
+            result.Add(new RoadmapGeneralDto
+            {
+                Id = roadmap.Id,
+                Name = roadmap.Name,
+                QuestionPerDay = average,
+                SignupCount = userRoadmaps.Count(),
+                TimeRequired = roadmapElements.Count(),
+                LevelStart = new LevelViewDto { Name = "Unknown start level." },
+                LevelEnd = new LevelViewDto { Name = "Unknown end level." }
+            });
+        }
+
+        return Ok(result);
+    }
+
 }

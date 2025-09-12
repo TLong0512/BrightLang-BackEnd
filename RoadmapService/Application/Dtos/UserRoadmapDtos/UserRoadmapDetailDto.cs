@@ -7,5 +7,5 @@ public class UserRoadmapDetailDto
 {
     public Guid Id { get; set; }
     public RoadmapPreviewDto Roadmap { get; set; } = new();
-    public List<ProcessDto> Processs { get; set; } = [];
+    public List<ProcessDetailDto> Processs { get; set; } = [];
 }

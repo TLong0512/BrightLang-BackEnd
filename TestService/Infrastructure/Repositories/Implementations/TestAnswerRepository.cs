@@ -18,12 +18,34 @@ namespace Infrastructure.Repositories.Implementations
 
         }
 
-        public Task DeleteByCondition(Expression<Func<TestAnswer, bool>> predicate)
+        public async Task AddAnswerAsync(TestAnswer entity, Guid userId)
         {
-            _context.TestAnswers
+            entity.CreatedDate = DateTime.Now;
+            entity.CreatedBy = userId;
+
+            //check whether answer has been deleted in db
+            var deletedItem = await _context.TestAnswers
+                            .IgnoreQueryFilters()
+                            .FirstOrDefaultAsync(x => x.TestId == entity.TestId && x.AnswerId == entity.AnswerId);
+            if (deletedItem!= null)
+            {
+                deletedItem.IsDeleted = false;
+                deletedItem.CreatedDate = DateTime.Now;
+                deletedItem.CreatedBy = userId;
+                deletedItem.UpdatedDate = null;
+                deletedItem.UpdatedBy = null;
+            }
+            else
+            {
+                await _context.TestAnswers.AddAsync(entity);
+            }
+        }
+
+        public async Task DeleteByCondition(Expression<Func<TestAnswer, bool>> predicate)
+        {
+            await _context.TestAnswers
                        .Where(predicate)
                        .ExecuteUpdateAsync(s => s.SetProperty(e => e.IsDeleted, true));
-            return Task.CompletedTask;
         }
     }
 }

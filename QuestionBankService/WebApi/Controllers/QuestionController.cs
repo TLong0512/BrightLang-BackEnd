@@ -49,9 +49,9 @@ namespace WebApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        [HttpGet("generate/range/{rangeId}")]
+        [HttpGet("generate/range/{rangeId}/{num?}")]
         [Authorize]
-        public async Task<IActionResult> GenerateQuestionByRangeId(Guid rangeId)
+        public async Task<IActionResult> GenerateQuestionByRangeId(Guid rangeId, int num = -1)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace WebApi.Controllers
                 {
                     return BadRequest();
                 }
-                var result = await _questionService.GenerateQuestionByRangeIdAsync(rangeId);
+                var result = await _questionService.GenerateQuestionByRangeIdAsync(rangeId, num);
                 return Ok(result);
             }
             catch(KeyNotFoundException ex)

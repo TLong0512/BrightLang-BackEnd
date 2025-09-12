@@ -33,8 +33,12 @@ namespace Application.Services.Implementations
             {
                 throw new KeyNotFoundException("Not found skill level");
             }
+            if (rangeAddDto.StartQuestionNumber == 0 || rangeAddDto.EndQuestionNumber == 0)
+                throw new ArgumentException("wrong range number");
+            if (rangeAddDto.StartQuestionNumber > rangeAddDto.EndQuestionNumber)
+                throw new ArgumentException("start number must be bigger than end number");
             var existingRange = await _unitOfWork.RangeRepository.GetByConditionAsync(x => x.Name == rangeAddDto.Name);
-            if(existingRange != null)
+            if(existingRange.Count() > 0)
             {
                 throw new InvalidOperationException("Range already existed in db");
             }

@@ -12,6 +12,7 @@ using AutoMapper;
 using Domain.Entities;
 using Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -78,6 +79,12 @@ namespace Application.Services.Implementations
                     //move to next question if it has wrong question number
                     if (existingRange == null)
                         throw new ArgumentException("a question has wrong number");
+                    // check ansser allow one true 
+                    if (question.AnswerList.Count(x => x.IsCorrect) != 1)
+                        throw new ArgumentException("A question can only have one correct answer");
+                    // check answer has unique value
+                    if (question.AnswerList.Select(x => x.Value).Distinct().Count() != question.AnswerList.Count())
+                        throw new ArgumentException("duplicate answer value");
                     //check context of question
                     var listContexts = await _unitOfWork.ContextRepository.GetContextByCondition(x => x.RangeId == existingRange.Id);
                     var existContext = listContexts.FirstOrDefault(x => x.Content != "" && x.Content == question.Context.Content);
@@ -248,45 +255,69 @@ namespace Application.Services.Implementations
         }
         public async Task<QuestionViewDto> UpdateQuestionAsync(Guid id, QuestionUpdateDto questionUpdateDto, Guid userId)
         {
+
             var question = await _unitOfWork.QuestionRepository.GetQuestionById(id);
+
             if (question == null)
             {
-                return null;
+                throw new KeyNotFoundException("Not found question");
             }
-            else
+
+            // check ansser allow one true 
+            if (questionUpdateDto.ListAnswers.Count(x => x.IsCorrect) != 1)
+                throw new ArgumentException("A question can only have one correct answer");
+            // check answer has unique value
+            if (questionUpdateDto.ListAnswers.Select(x => x.Value).Distinct().Count() != questionUpdateDto.ListAnswers.Count())
+                throw new ArgumentException("duplicate answer value");
+
+            // update context
+            var context = question.Context;
+            var range = await _unitOfWork.RangeRepository.GetByIdAsync(context.RangeId);
+            var skillLevel = await _unitOfWork.SkillLevelRepository.GetByIdAsync(range.SkillLevelId);
+            var level = await _unitOfWork.LevelRepository.GetByIdAsync(skillLevel.LevelId);
+            var examType = await _unitOfWork.ExamTypeRepository.GetByIdAsync(level.ExamTypeId);
+
+            var rangesInSameExamTypeAndSkill = await _unitOfWork.RangeRepository.GetByConditionAsync(r =>
+                                                r.SkillLevel.Level.ExamTypeId == examType.Id &&
+                                                r.SkillLevel.SkillId == skillLevel.SkillId
+                                            );
+            var existingRange = rangesInSameExamTypeAndSkill.FirstOrDefault(
+                                                x => x.StartQuestionNumber <= questionUpdateDto.QuestionNumber
+                                                && x.EndQuestionNumber >= questionUpdateDto.QuestionNumber);
+            if (existingRange == null) throw new ArgumentException();
+
+            await _unitOfWork.ContextRepository.Delete(context);
+
+            var newContext = new Context();
+            newContext.Content = questionUpdateDto.ContextUpdate.Content;
+            newContext.Explain = questionUpdateDto.ContextUpdate.Explain;
+            newContext.IsBelongTest = questionUpdateDto.ContextUpdate.IsBelongTest;
+            newContext.RangeId = existingRange.Id;
+            await _unitOfWork.ContextRepository.AddAsync(newContext, userId);
+            await _unitOfWork.SaveChangesAsync();
+
+            // update list answer
+            foreach (var answer in question.Answers)
             {
-                // update question
-                var updatedQuestion = _mapper.Map<Question>(questionUpdateDto);
-                question.ContextId = updatedQuestion.ContextId;
-                question.QuestionNumber = updatedQuestion.QuestionNumber;
-                question.Content = updatedQuestion.Content;
-                question.Explain = updatedQuestion.Explain;
-                await _unitOfWork.QuestionRepository.Update(question, userId);
-
-                // update context
-                var context = question.Context;
-                var updatedContext = _mapper.Map<Context>(questionUpdateDto.Context);
-                context.Content = updatedContext.Content;
-                context.Explain = updatedContext.Content;
-                context.IsBelongTest = updatedContext.IsBelongTest;
-                await _unitOfWork.ContextRepository.Update(context, userId);
-
-                // update list answer
-                foreach (var answer in question.Answers)
-                {
-                    await _unitOfWork.AnswerRepository.Delete(answer);
-                }
-
-                foreach (var answerUpdateDto in questionUpdateDto.ListAnswers)
-                {
-                    var updateAnswer = _mapper.Map<Answer>(answerUpdateDto);
-                    updateAnswer.QuestionId = question.Id;
-                    await _unitOfWork.AnswerRepository.AddAsync(updateAnswer, userId);
-                }
-
-                await _unitOfWork.SaveChangesAsync();
-                return _mapper.Map<QuestionViewDto>(question);
+                await _unitOfWork.AnswerRepository.Delete(answer);
             }
+
+            foreach (var answerUpdateDto in questionUpdateDto.ListAnswers)
+            {
+                var updateAnswer = _mapper.Map<Answer>(answerUpdateDto);
+                updateAnswer.QuestionId = question.Id;
+                await _unitOfWork.AnswerRepository.AddAsync(updateAnswer, userId);
+            }
+
+            // update question
+            question.ContextId = newContext.Id;
+            question.QuestionNumber = questionUpdateDto.QuestionNumber;
+            question.Content = questionUpdateDto.Content;
+            question.Explain = questionUpdateDto.Explain;
+            await _unitOfWork.QuestionRepository.Update(question, userId);
+
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<QuestionViewDto>(question);
         }
         public async Task<IEnumerable<Guid>> GenerateAllExamTypeQuestionAsync(int numberPerSkillLevel = 2)
         {
@@ -346,7 +377,7 @@ namespace Application.Services.Implementations
 
             return result;
         }
-        public async Task<IEnumerable<Guid>> GenerateQuestionByRangeIdAsync(Guid rangeId)
+        public async Task<IEnumerable<Guid>> GenerateQuestionByRangeIdAsync(Guid rangeId, int num = -1)
         {
             var existingRange = await _unitOfWork.RangeRepository.GetByIdAsync(rangeId);
             //get list context in range
@@ -379,7 +410,40 @@ namespace Application.Services.Implementations
                     i++;
                 }
             }
-            return listGenQuestionResult;
+
+            if (num == -1)
+            {
+                return listGenQuestionResult;
+            }
+            if (listGenQuestionResult.Count > num)
+            {
+                // Random num elements in result
+                return listGenQuestionResult.OrderBy(x => random.Next()).Take(num).ToList();
+            }
+            else if (listGenQuestionResult.Count == num)
+            {
+                return listGenQuestionResult;
+            }
+            else // listGenQuestionResult.Count < num
+            {
+                var remainingIds = listQuestions.Select(q => q.Id)
+                                                .Except(listGenQuestionResult)
+                                                .ToList();
+
+                int needed = num - listGenQuestionResult.Count;
+
+                if (remainingIds.Count <= needed)
+                {
+                    // if remaining Ids + output < num => add all
+                    listGenQuestionResult.AddRange(remainingIds);
+                }
+                else
+                {
+                    // Random remainingIds
+                    listGenQuestionResult.AddRange(remainingIds.OrderBy(x => random.Next()).Take(needed));
+                }
+                return listGenQuestionResult;
+            }
         }
     }
 }
